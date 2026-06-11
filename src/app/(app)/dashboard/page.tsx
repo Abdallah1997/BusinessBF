@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { Card, EmptyState, PageHeader, StatCard, tdCls, thCls } from "@/components/ui";
+import { AiInsights } from "@/components/ai-insights";
+import { AnimatedMoney } from "@/components/animated-number";
+import { IconAlert } from "@/components/icons";
+import { Card, EmptyState, PageHeader, StatCard, tdCls, tdMoney, thCls } from "@/components/ui";
+import { isAiConfigured } from "@/lib/ai";
 import { MARKETPLACE_LABELS, type Marketplace } from "@/lib/constants";
 import { formatCents } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
@@ -67,17 +71,22 @@ export default async function DashboardPage() {
       {delistAlertCount > 0 && (
         <Link
           href="/listings"
-          className="mb-6 block rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 hover:bg-amber-100"
+          className="mb-6 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-100 animate-fade-up"
         >
-          ⚠ {delistAlertCount} listing{delistAlertCount > 1 ? "s" : ""} still active for items that already sold — review now →
+          <IconAlert className="h-4 w-4 shrink-0" />
+          {delistAlertCount} listing{delistAlertCount > 1 ? "s" : ""} still active for items that already sold — review now
         </Link>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Revenue (this month)" value={formatCents(revenueMtd)} sub={`${monthSales.length} sales`} />
-        <StatCard label="Profit (this month)" value={formatCents(profitMtd)} accent />
-        <StatCard label="Profit (year to date)" value={formatCents(profitYtd)} accent />
-        <StatCard label="Inventory at cost" value={formatCents(inventoryValue)} sub={`${activeListingCount} active listings`} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 stagger-children">
+        <StatCard label="Revenue (this month)" value={<AnimatedMoney cents={revenueMtd} />} sub={`${monthSales.length} sales`} />
+        <StatCard label="Profit (this month)" value={<AnimatedMoney cents={profitMtd} />} accent />
+        <StatCard label="Profit (year to date)" value={<AnimatedMoney cents={profitYtd} />} accent />
+        <StatCard label="Inventory at cost" value={<AnimatedMoney cents={inventoryValue} />} sub={`${activeListingCount} active listings`} />
+      </div>
+
+      <div className="mt-6 animate-fade-up">
+        <AiInsights aiConfigured={isAiConfigured()} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -87,8 +96,11 @@ export default async function DashboardPage() {
             {monthlyProfit.map((v, m) => (
               <div key={m} className="flex flex-1 flex-col items-center gap-1">
                 <div
-                  className={`w-full rounded-t ${v >= 0 ? "bg-emerald-500" : "bg-red-400"}`}
-                  style={{ height: `${Math.max(2, (Math.abs(v) / maxAbs) * 130)}px` }}
+                  className={`w-full rounded-t animate-grow-bar ${v >= 0 ? "bg-emerald-500" : "bg-red-400"}`}
+                  style={{
+                    height: `${Math.max(2, (Math.abs(v) / maxAbs) * 130)}px`,
+                    animationDelay: `${m * 40}ms`,
+                  }}
                   title={`${monthNames[m]}: ${formatCents(v)}`}
                 />
                 <span className="text-[10px] text-zinc-400">{monthNames[m][0]}</span>
@@ -126,7 +138,7 @@ export default async function DashboardPage() {
                       <td className={`${tdCls} whitespace-nowrap`}>{s.soldAt.toLocaleDateString("en-US")}</td>
                       <td className={tdCls}>{s.item?.name ?? "—"}</td>
                       <td className={tdCls}>{MARKETPLACE_LABELS[s.marketplace as Marketplace] ?? s.marketplace}</td>
-                      <td className={`${tdCls} tabular-nums font-semibold ${profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      <td className={`${tdMoney} font-semibold ${profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
                         {formatCents(profit)}
                       </td>
                     </tr>

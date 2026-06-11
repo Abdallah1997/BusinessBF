@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IconCheck } from "@/components/icons";
 import { getUser } from "@/lib/session";
 
 export const metadata = { title: "Pricing" };
@@ -82,7 +83,7 @@ export default async function PricingPage() {
             <ul className="mt-5 space-y-2">
               {tier.features.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-sm text-zinc-700">
-                  <span className="mt-0.5 text-emerald-600">✓</span> {f}
+                  <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" /> {f}
                 </li>
               ))}
             </ul>

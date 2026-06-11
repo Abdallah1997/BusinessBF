@@ -1,4 +1,5 @@
 import { ActionForm } from "@/components/action-form";
+import { IconAlert, IconExternal } from "@/components/icons";
 import {
   Card,
   EmptyState,
@@ -52,9 +53,10 @@ export default async function ListingsPage() {
       />
 
       {delistAlerts.length > 0 && (
-        <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4">
-          <p className="text-sm font-semibold text-amber-800">
-            ⚠ {delistAlerts.length} listing{delistAlerts.length > 1 ? "s" : ""} need delisting — the item already sold elsewhere
+        <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 animate-fade-up">
+          <p className="flex items-center gap-2 text-sm font-semibold text-amber-800">
+            <IconAlert className="h-4 w-4 shrink-0" />
+            {delistAlerts.length} listing{delistAlerts.length > 1 ? "s" : ""} need delisting — the item already sold elsewhere
           </p>
           <ul className="mt-2 space-y-1.5">
             {delistAlerts.map((l) => (
@@ -134,8 +136,8 @@ export default async function ListingsPage() {
                   <td className={tdCls}>
                     <span className="font-medium text-zinc-900">{l.item.name}</span>
                     {l.url && (
-                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-xs text-emerald-600 hover:underline">
-                        view ↗
+                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-xs text-emerald-600 hover:underline">
+                        view <IconExternal className="h-3 w-3" />
                       </a>
                     )}
                   </td>

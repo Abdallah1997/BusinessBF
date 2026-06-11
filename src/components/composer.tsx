@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, inputCls, labelCls } from "./ui";
+import { IconSparkle } from "./icons";
+import { Card, btnPrimary, inputCls, labelCls } from "./ui";
+import { generateListing } from "@/server/compose";
 
 interface MarketplaceProfile {
   key: string;
@@ -78,9 +80,12 @@ const PROFILES: MarketplaceProfile[] = [
 ];
 
 function buildTitle(input: ComposerInput, limit: number): string {
-  const raw = [input.brand, input.title, input.size && `Size ${input.size}`]
-    .filter(Boolean)
-    .join(" ");
+  // Skip brand/size prefixes the title already contains (AI titles include them).
+  const lower = input.title.toLowerCase();
+  const brand = input.brand && !lower.includes(input.brand.toLowerCase()) ? input.brand : "";
+  const size =
+    input.size && !lower.includes(input.size.toLowerCase()) ? `Size ${input.size}` : "";
+  const raw = [brand, input.title, size].filter(Boolean).join(" ");
   return raw.length <= limit ? raw : raw.slice(0, limit - 1).trimEnd() + "…";
 }
 
@@ -101,7 +106,13 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-export function Composer() {
+export function Composer({
+  items,
+  aiConfigured,
+}: {
+  items: { id: string; name: string; sku: string | null }[];
+  aiConfigured: boolean;
+}) {
   const [input, setInput] = useState<ComposerInput>({
     title: "",
     brand: "",
@@ -112,17 +123,93 @@ export function Composer() {
     description: "",
     hashtags: "",
   });
+  const [itemId, setItemId] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [suggestedPrice, setSuggestedPrice] = useState<string | null>(null);
 
   function set<K extends keyof ComposerInput>(key: K) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setInput((prev) => ({ ...prev, [key]: e.target.value }));
   }
 
+  async function handleGenerate() {
+    if (!itemId) {
+      setAiError("Pick an inventory item first");
+      return;
+    }
+    setAiError(null);
+    setGenerating(true);
+    const fd = new FormData();
+    fd.set("itemId", itemId);
+    const result = await generateListing(fd);
+    setGenerating(false);
+    if (!result.ok || !result.data) {
+      setAiError(result.error ?? "Generation failed");
+      return;
+    }
+    const d = result.data;
+    setInput({
+      title: d.title,
+      brand: d.brand,
+      size: d.size,
+      condition: d.condition,
+      measurements: d.measurements,
+      flaws: d.flaws,
+      description: d.description,
+      hashtags: d.hashtags,
+    });
+    setSuggestedPrice(d.suggestedPriceDollars);
+  }
+
   const hasContent = input.title.trim().length > 0;
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-      <Card className="p-5 lg:col-span-2">
+      <Card className="p-5 lg:col-span-2 animate-fade-up">
+        <div className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800">
+            <IconSparkle className="h-3.5 w-3.5" /> Generate from inventory
+          </p>
+          {items.length === 0 ? (
+            <p className="mt-2 text-xs text-zinc-500">Add inventory items first, then AI writes the listing for you.</p>
+          ) : (
+            <>
+              <select
+                value={itemId}
+                onChange={(e) => setItemId(e.target.value)}
+                className={`${inputCls} mt-2`}
+              >
+                <option value="">— Pick an item —</option>
+                {items.map((i) => (
+                  <option key={i.id} value={i.id}>
+                    {i.sku ? `[${i.sku}] ` : ""}{i.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={generating || !aiConfigured}
+                className={`${btnPrimary} mt-2 w-full`}
+                title={aiConfigured ? undefined : "Add ANTHROPIC_API_KEY to .env to enable"}
+              >
+                <IconSparkle className="h-4 w-4" />
+                {generating ? "Writing listing…" : "Generate with AI"}
+              </button>
+              {!aiConfigured && (
+                <p className="mt-1.5 text-xs text-zinc-400">Requires ANTHROPIC_API_KEY in .env</p>
+              )}
+              {aiError && <p role="alert" className="mt-1.5 text-xs text-red-600">{aiError}</p>}
+              {suggestedPrice && (
+                <p className="mt-1.5 text-xs text-emerald-700">
+                  AI suggested price: <span className="money font-semibold">${suggestedPrice}</span>
+                </p>
+              )}
+            </>
+          )}
+        </div>
+
         <h2 className="mb-4 text-sm font-semibold text-zinc-900">Write once</h2>
         <div className="space-y-4">
           <div>

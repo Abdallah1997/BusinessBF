@@ -1,21 +1,19 @@
+import Link from "next/link";
 import { ActionForm } from "@/components/action-form";
+import { ItemFields } from "@/components/item-fields";
+import { ReceiptScanner } from "@/components/receipt-scanner";
 import {
   Card,
   EmptyState,
   PageHeader,
   StatusBadge,
   btnDanger,
-  inputCls,
-  labelCls,
+  summaryCls,
   tdCls,
+  tdMoney,
   thCls,
 } from "@/components/ui";
-import {
-  CONDITION_LABELS,
-  ITEM_CONDITIONS,
-  MARKETPLACE_LABELS,
-  type Marketplace,
-} from "@/lib/constants";
+import { MARKETPLACE_LABELS, type Marketplace } from "@/lib/constants";
 import { formatCents } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
@@ -43,70 +41,28 @@ export default async function InventoryPage() {
         subtitle={`${items.filter((i) => i.status === "ACTIVE").length} active items · ${formatCents(totalCostCents)} invested`}
       />
 
-      <details className="mb-6 group">
-        <summary className="cursor-pointer select-none rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50">
-          + Add item
-        </summary>
-        <Card className="mt-3 p-5">
-          <ActionForm action={createItem} submitLabel="Add item">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="lg:col-span-2">
-                <label className={labelCls}>Name *</label>
-                <input name="name" required maxLength={200} className={inputCls} placeholder="Nike Air Max 90, size 10" />
-              </div>
-              <div>
-                <label className={labelCls}>SKU</label>
-                <input name="sku" maxLength={100} className={inputCls} placeholder="A-104" />
-              </div>
-              <div>
-                <label className={labelCls}>Brand</label>
-                <input name="brand" maxLength={100} className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Category</label>
-                <input name="category" maxLength={100} className={inputCls} placeholder="Shoes" />
-              </div>
-              <div>
-                <label className={labelCls}>Size</label>
-                <input name="size" maxLength={50} className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Condition</label>
-                <select name="condition" defaultValue="GOOD" className={inputCls}>
-                  {ITEM_CONDITIONS.map((c) => (
-                    <option key={c} value={c}>{CONDITION_LABELS[c]}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Cost (what you paid) $</label>
-                <input name="cost" inputMode="decimal" className={inputCls} placeholder="12.50" />
-              </div>
-              <div>
-                <label className={labelCls}>Quantity</label>
-                <input name="quantity" type="number" min={1} defaultValue={1} className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Purchased on</label>
-                <input name="purchasedAt" type="date" className={inputCls} />
-              </div>
-              <div>
-                <label className={labelCls}>Source</label>
-                <input name="source" maxLength={200} className={inputCls} placeholder="Goodwill, estate sale…" />
-              </div>
-              <div className="sm:col-span-2 lg:col-span-3">
-                <label className={labelCls}>Notes</label>
-                <input name="notes" maxLength={5000} className={inputCls} />
-              </div>
-            </div>
-          </ActionForm>
-        </Card>
-      </details>
+      <div className="mb-6 space-y-3">
+        <details className="group">
+          <summary className={summaryCls}>Scan receipt with AI</summary>
+          <Card className="mt-3 p-5">
+            <ReceiptScanner />
+          </Card>
+        </details>
+
+        <details>
+          <summary className={summaryCls}>Add item manually</summary>
+          <Card className="mt-3 p-5">
+            <ActionForm action={createItem} submitLabel="Add item">
+              <ItemFields />
+            </ActionForm>
+          </Card>
+        </details>
+      </div>
 
       {items.length === 0 ? (
-        <EmptyState title="No inventory yet" hint="Add your first item above — cost tracking starts here." />
+        <EmptyState title="No inventory yet" hint="Scan a receipt or add your first item — cost tracking starts here." />
       ) : (
-        <Card>
+        <Card className="animate-fade-up">
           <table className="w-full">
             <thead className="border-b border-zinc-200">
               <tr>
@@ -119,9 +75,9 @@ export default async function InventoryPage() {
                 <th className={thCls}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y divide-zinc-100 stagger-children">
               {items.map((item) => (
-                <tr key={item.id} className="hover:bg-zinc-50/50">
+                <tr key={item.id} className="transition-colors hover:bg-zinc-50/50">
                   <td className={tdCls}>
                     <p className="font-medium text-zinc-900">{item.name}</p>
                     {(item.brand || item.size) && (
@@ -131,7 +87,7 @@ export default async function InventoryPage() {
                     )}
                   </td>
                   <td className={tdCls}>{item.sku ?? "—"}</td>
-                  <td className={`${tdCls} tabular-nums`}>{formatCents(item.costCents)}</td>
+                  <td className={tdMoney}>{formatCents(item.costCents)}</td>
                   <td className={tdCls}>{item.quantity}</td>
                   <td className={tdCls}>
                     {item.listings.length === 0 ? (
@@ -143,8 +99,14 @@ export default async function InventoryPage() {
                     )}
                   </td>
                   <td className={tdCls}><StatusBadge status={item.status} /></td>
-                  <td className={`${tdCls} text-right`}>
-                    <form action={deleteItem}>
+                  <td className={`${tdCls} text-right whitespace-nowrap`}>
+                    <Link
+                      href={`/inventory/${item.id}`}
+                      className="mr-2 text-xs font-medium text-emerald-600 hover:underline"
+                    >
+                      Edit
+                    </Link>
+                    <form action={deleteItem} className="inline-block">
                       <input type="hidden" name="id" value={item.id} />
                       <button type="submit" className={btnDanger}>Delete</button>
                     </form>

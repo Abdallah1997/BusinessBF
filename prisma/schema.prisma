@@ -22,16 +22,21 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  // Address the user forwards purchase-confirmation emails from/to.
+  // Display + future inbound-mail matching only; no mail credentials stored.
+  importEmailAddress String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  sessions  Session[]
-  accounts  Account[]
-  items     Item[]
-  listings  Listing[]
-  sales     Sale[]
-  expenses  Expense[]
-  mileage   MileageEntry[]
+  sessions         Session[]
+  accounts         Account[]
+  items            Item[]
+  listings         Listing[]
+  sales            Sale[]
+  expenses         Expense[]
+  mileage          MileageEntry[]
+  bankAccounts     BankAccount[]
+  bankTransactions BankTransaction[]
 
   @@map("user")
 }
@@ -188,6 +193,53 @@ model Expense {
 
   @@index([userId, date])
   @@map("expense")
+}
+
+// ---------- Bank import ----------
+// Only display metadata is stored: nickname, institution, last 4 digits.
+// Full account numbers, routing numbers and credentials are NEVER stored.
+
+model BankAccount {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nickname    String
+  institution String?
+  last4       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  transactions BankTransaction[]
+
+  @@index([userId])
+  @@map("bank_account")
+}
+
+model BankTransaction {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bankAccountId String?
+  bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  date          DateTime
+  description   String
+  amountCents   Int // negative = money out (spend), positive = money in
+  // AI classification: EXPENSE | INVENTORY | IGNORE (zod-validated)
+  aiSuggestion  String?
+  aiCategory    String? // Schedule C category when suggestion is EXPENSE
+  aiItemName    String? // cleaned-up item name when suggestion is INVENTORY
+  aiConfidence  Float?
+  aiRationale   String?
+  // PENDING | CONFIRMED | DISMISSED (zod-validated)
+  status        String       @default("PENDING")
+  linkedExpenseId String?
+  linkedItemId  String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([userId, status])
+  @@index([userId, date])
+  @@map("bank_transaction")
 }
 
 model MileageEntry {

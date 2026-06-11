@@ -13,9 +13,23 @@ One tool instead of two: tracks what SellerLedger tracks (profit, expenses, Sche
 - **Reports** — yearly P&L, Schedule C summary, CSV exports
 - **Listing composer** — write a listing once, get correctly formatted copy per marketplace with title limits enforced
 
+## AI features (require `ANTHROPIC_API_KEY` in `.env`)
+
+Powered by the Claude API; every feature degrades gracefully to a setup hint when no key is set.
+
+- **Receipt scan** (Inventory) — photograph a receipt, Claude vision extracts store/date/items/total and pre-fills the item form for review
+- **Bank transaction classification** (Bank) — import a bank CSV; AI tags each spend as business expense (with Schedule C category), inventory purchase, or personal. Nothing is booked until you confirm each row
+- **Email import** (Email import) — paste or upload an order-confirmation email; AI extracts the purchased items, you approve which become inventory
+- **AI listing writer** (Composer) — pick an inventory item, AI writes the title/description/hashtags and suggests a price; per-marketplace formatting applies automatically
+- **Business insights** (Dashboard) — AI analyzes your real sales, fees, expenses and stale listings into actionable next steps
+
+Bank accounts store nickname/institution/last-4 only — never account numbers, routing numbers or logins. Automatic inbox sync (Gmail OAuth) and live bank feeds (Plaid) are roadmap items; CSV/paste flows ship now.
+
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Prisma 7 · better-auth · Tailwind CSS 4 · zod · Vitest
+Next.js 16 (App Router) · TypeScript · Prisma 7 · better-auth · Tailwind CSS 4 · zod · Vitest · Claude API (`@anthropic-ai/sdk`)
+
+Design language lives in [DESIGN.md](DESIGN.md) — motion system, palette, typography and banned patterns.
 
 ## Getting started
 

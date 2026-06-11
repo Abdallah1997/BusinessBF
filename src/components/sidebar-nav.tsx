@@ -3,16 +3,30 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import {
+  IconBank,
+  IconBox,
+  IconChart,
+  IconGear,
+  IconGrid,
+  IconMail,
+  IconPen,
+  IconReceipt,
+  IconTag,
+  IconTrendUp,
+} from "./icons";
 
 const links = [
-  { href: "/dashboard", label: "Dashboard", icon: "▦" },
-  { href: "/inventory", label: "Inventory", icon: "▤" },
-  { href: "/listings", label: "Listings", icon: "◫" },
-  { href: "/sales", label: "Sales", icon: "▲" },
-  { href: "/expenses", label: "Expenses", icon: "▽" },
-  { href: "/reports", label: "Reports", icon: "≣" },
-  { href: "/composer", label: "Composer", icon: "✎" },
-  { href: "/settings", label: "Settings", icon: "⚙" },
+  { href: "/dashboard", label: "Dashboard", Icon: IconGrid },
+  { href: "/inventory", label: "Inventory", Icon: IconBox },
+  { href: "/listings", label: "Listings", Icon: IconTag },
+  { href: "/sales", label: "Sales", Icon: IconTrendUp },
+  { href: "/expenses", label: "Expenses", Icon: IconReceipt },
+  { href: "/bank", label: "Bank", Icon: IconBank },
+  { href: "/email-import", label: "Email import", Icon: IconMail },
+  { href: "/reports", label: "Reports", Icon: IconChart },
+  { href: "/composer", label: "Composer", Icon: IconPen },
+  { href: "/settings", label: "Settings", Icon: IconGear },
 ];
 
 export function SidebarNav({ email }: { email: string }) {
@@ -33,24 +47,24 @@ export function SidebarNav({ email }: { email: string }) {
         </Link>
         <button
           onClick={handleSignOut}
-          className="text-xs font-medium text-zinc-400 hover:text-white transition-colors md:hidden"
+          className="text-xs font-medium text-zinc-400 transition-colors hover:text-white md:hidden"
         >
           Sign out
         </button>
       </div>
       <nav className="flex flex-row gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:gap-0.5 md:pb-0">
-        {links.map((link) => {
-          const active = pathname.startsWith(link.href);
+        {links.map(({ href, label, Icon }) => {
+          const active = pathname.startsWith(href);
           return (
             <Link
-              key={link.href}
-              href={link.href}
+              key={href}
+              href={href}
               className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 active ? "bg-emerald-600/15 text-emerald-300" : "hover:bg-zinc-900 hover:text-white"
               }`}
             >
-              <span aria-hidden className="hidden text-xs opacity-70 md:inline">{link.icon}</span>
-              {link.label}
+              <Icon className="hidden h-4 w-4 opacity-70 md:block" />
+              {label}
             </Link>
           );
         })}
@@ -59,7 +73,7 @@ export function SidebarNav({ email }: { email: string }) {
         <p className="truncate text-xs text-zinc-500" title={email}>{email}</p>
         <button
           onClick={handleSignOut}
-          className="mt-2 text-xs font-medium text-zinc-400 hover:text-white transition-colors"
+          className="mt-2 text-xs font-medium text-zinc-400 transition-colors hover:text-white"
         >
           Sign out
         </button>

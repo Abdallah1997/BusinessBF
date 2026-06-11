@@ -27,6 +27,34 @@ export async function createExpense(_prev: ActionState, formData: FormData): Pro
   return { ok: true };
 }
 
+export async function updateExpense(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const user = await requireUser();
+  const id = str(formData, "id");
+  if (!id) return { ok: false, error: "Missing expense id" };
+
+  const amountCents = dollarsField(formData, "amount", null);
+  if (amountCents === null) return { ok: false, error: "Amount must be a valid dollar amount" };
+
+  const parsed = expenseSchema.safeParse({
+    date: str(formData, "date"),
+    amountCents,
+    category: str(formData, "category"),
+    vendor: str(formData, "vendor"),
+    description: str(formData, "description"),
+  });
+  if (!parsed.success) return fieldError(parsed.error);
+
+  const { count } = await prisma.expense.updateMany({
+    where: { id, userId: user.id },
+    data: parsed.data,
+  });
+  if (count === 0) return { ok: false, error: "Expense not found" };
+
+  revalidatePath("/expenses");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
 export async function deleteExpense(formData: FormData): Promise<void> {
   const user = await requireUser();
   const id = str(formData, "id");

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ActionForm } from "@/components/action-form";
 import {
   Card,
@@ -131,8 +132,11 @@ export default async function ExpensesPage() {
                         {e.vendor && <p className="text-xs text-zinc-400">{e.vendor}</p>}
                       </td>
                       <td className={`${tdCls} tabular-nums`}>{formatCents(e.amountCents)}</td>
-                      <td className={`${tdCls} text-right`}>
-                        <form action={deleteExpense}>
+                      <td className={`${tdCls} text-right whitespace-nowrap`}>
+                        <Link href={`/expenses/${e.id}`} className="mr-2 text-xs font-medium text-emerald-600 hover:underline">
+                          Edit
+                        </Link>
+                        <form action={deleteExpense} className="inline-block">
                           <input type="hidden" name="id" value={e.id} />
                           <button type="submit" className={btnDanger}>Delete</button>
                         </form>
