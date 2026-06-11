@@ -1,0 +1,205 @@
+// FlipLedger schema.
+// Conventions:
+// - All monetary values are stored as integer cents to avoid floating-point errors.
+// - "Enum" fields are strings validated by zod at the application boundary so the
+//   schema works identically on SQLite (dev) and PostgreSQL (production).
+// - Every domain table carries userId; all queries must filter by it.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ---------- Auth (managed by better-auth) ----------
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions  Session[]
+  accounts  Account[]
+  items     Item[]
+  listings  Listing[]
+  sales     Sale[]
+  expenses  Expense[]
+  mileage   MileageEntry[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ---------- Inventory ----------
+
+model Item {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  sku         String?
+  brand       String?
+  category    String?
+  size        String?
+  // NEW | LIKE_NEW | GOOD | FAIR | POOR (zod-validated)
+  condition   String    @default("GOOD")
+  costCents   Int       @default(0)
+  purchasedAt DateTime?
+  source      String? // where the item was sourced (thrift store, wholesale, etc.)
+  quantity    Int       @default(1)
+  // ACTIVE | SOLD | ARCHIVED (zod-validated)
+  status      String    @default("ACTIVE")
+  imageUrl    String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  listings Listing[]
+  sales    Sale[]
+
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@map("item")
+}
+
+// ---------- Marketplace listings ----------
+
+model Listing {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  // EBAY | POSHMARK | MERCARI | DEPOP | FACEBOOK | ETSY | WHATNOT | GRAILED | VINTED | OTHER
+  marketplace String
+  priceCents  Int
+  url         String?
+  // DRAFT | ACTIVE | SOLD | DELISTED (zod-validated)
+  status      String    @default("ACTIVE")
+  listedAt    DateTime  @default(now())
+  delistedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  sales Sale[]
+
+  @@index([userId, status])
+  @@index([itemId])
+  @@map("listing")
+}
+
+// ---------- Sales ----------
+
+model Sale {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId               String?
+  item                 Item?    @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  listingId            String?
+  listing              Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  marketplace          String
+  soldAt               DateTime @default(now())
+  salePriceCents       Int
+  shippingChargedCents Int      @default(0) // shipping collected from buyer
+  feesCents            Int      @default(0) // marketplace + payment fees
+  shippingCostCents    Int      @default(0) // actual label/postage cost
+  otherCostCents       Int      @default(0) // packaging, etc.
+  costOfGoodsCents     Int      @default(0) // snapshot of item cost at time of sale
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([userId, soldAt])
+  @@index([itemId])
+  @@map("sale")
+}
+
+// ---------- Expenses (Schedule C aligned) ----------
+
+model Expense {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  amountCents Int
+  // Schedule C category key (zod-validated): SUPPLIES, SHIPPING, FEES,
+  // ADVERTISING, OFFICE, TRAVEL, MEALS, UTILITIES, INSURANCE, LEGAL,
+  // REPAIRS, RENT_LEASE, TAXES_LICENSES, EDUCATION, SOFTWARE, OTHER
+  category    String
+  vendor      String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, date])
+  @@map("expense")
+}
+
+model MileageEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  miles     Float
+  purpose   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, date])
+  @@map("mileage_entry")
+}
