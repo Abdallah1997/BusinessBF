@@ -53,14 +53,14 @@ export default async function ListingsPage() {
       />
 
       {delistAlerts.length > 0 && (
-        <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 animate-fade-up">
-          <p className="flex items-center gap-2 text-sm font-semibold text-amber-800">
+        <div className="mb-6 rounded-xl border border-amber-300 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 p-4 animate-fade-up">
+          <p className="flex items-center gap-2 text-sm font-semibold text-amber-800 dark:text-amber-300">
             <IconAlert className="h-4 w-4 shrink-0" />
             {delistAlerts.length} listing{delistAlerts.length > 1 ? "s" : ""} need delisting: the item already sold elsewhere
           </p>
           <ul className="mt-2 space-y-1.5">
             {delistAlerts.map((l) => (
-              <li key={l.id} className="flex items-center gap-3 text-sm text-amber-900">
+              <li key={l.id} className="flex items-center gap-3 text-sm text-amber-900 dark:text-amber-200">
                 <span>{l.item.name} on <strong>{marketplaceLabel(l.marketplace)}</strong></span>
                 <form action={setListingStatus}>
                   <input type="hidden" name="id" value={l.id} />
@@ -74,12 +74,12 @@ export default async function ListingsPage() {
       )}
 
       <details className="mb-6">
-        <summary className="cursor-pointer select-none rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50">
+        <summary className="cursor-pointer select-none rounded-lg border border-zinc-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-zinc-700 dark:text-neutral-300 hover:bg-zinc-50 dark:hover:bg-neutral-800">
           + Add listing
         </summary>
         <Card className="mt-3 p-5">
           {activeItems.length === 0 ? (
-            <p className="text-sm text-zinc-500">Add an inventory item first: listings link to items.</p>
+            <p className="text-sm text-zinc-500 dark:text-neutral-400">Add an inventory item first: listings link to items.</p>
           ) : (
             <ActionForm action={createListing} submitLabel="Add listing">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -120,7 +120,7 @@ export default async function ListingsPage() {
       ) : (
         <Card>
           <table className="w-full">
-            <thead className="border-b border-zinc-200">
+            <thead className="border-b border-zinc-200 dark:border-neutral-800">
               <tr>
                 <th className={thCls}>Item</th>
                 <th className={thCls}>Marketplace</th>
@@ -130,13 +130,13 @@ export default async function ListingsPage() {
                 <th className={thCls}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800">
               {listings.map((l) => (
-                <tr key={l.id} className="hover:bg-zinc-50/50">
+                <tr key={l.id} className="hover:bg-zinc-50/50 dark:hover:bg-neutral-800/40">
                   <td className={tdCls}>
-                    <span className="font-medium text-zinc-900">{l.item.name}</span>
+                    <span className="font-medium text-zinc-900 dark:text-neutral-100">{l.item.name}</span>
                     {l.url && (
-                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-xs text-emerald-600 hover:underline">
+                      <a href={l.url} target="_blank" rel="noopener noreferrer" className="ml-2 inline-flex items-center gap-0.5 text-xs text-orange-600 dark:text-orange-400 hover:underline">
                         view <IconExternal className="h-3 w-3" />
                       </a>
                     )}
@@ -150,7 +150,7 @@ export default async function ListingsPage() {
                       <form action={setListingStatus} className="inline-block mr-2">
                         <input type="hidden" name="id" value={l.id} />
                         <input type="hidden" name="status" value="DELISTED" />
-                        <button type="submit" className="text-xs font-medium text-zinc-500 hover:text-zinc-800">
+                        <button type="submit" className="text-xs font-medium text-zinc-500 dark:text-neutral-400 hover:text-zinc-800 dark:hover:text-neutral-200">
                           Delist
                         </button>
                       </form>

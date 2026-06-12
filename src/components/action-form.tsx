@@ -34,9 +34,9 @@ export function ActionForm({
           {pending ? "Saving…" : submitLabel}
         </button>
         {state && !state.ok && (
-          <p role="alert" className="text-sm text-red-600">{state.error}</p>
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
         )}
-        {state?.ok && <p className="text-sm text-emerald-600">Saved.</p>}
+        {state?.ok && <p className="text-sm text-orange-600 dark:text-orange-400">Saved.</p>}
       </div>
     </form>
   );

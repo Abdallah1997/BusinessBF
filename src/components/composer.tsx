@@ -99,7 +99,7 @@ function CopyButton({ text }: { text: string }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}
-      className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
+      className="rounded-lg border border-zinc-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2.5 py-1 text-xs font-medium text-zinc-600 dark:text-neutral-400 hover:bg-zinc-50 dark:hover:bg-neutral-800"
     >
       {copied ? "Copied ✓" : "Copy"}
     </button>
@@ -167,12 +167,12 @@ export function Composer({
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
       <Card className="p-5 lg:col-span-2 animate-fade-up">
-        <div className="mb-5 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
-          <p className="flex items-center gap-1.5 text-xs font-semibold text-emerald-800">
+        <div className="mb-5 rounded-lg border border-orange-200 dark:border-orange-900 bg-orange-50/50 dark:bg-orange-950/20 p-3">
+          <p className="flex items-center gap-1.5 text-xs font-semibold text-orange-800 dark:text-orange-300">
             <IconSparkle className="h-3.5 w-3.5" /> Generate from inventory
           </p>
           {items.length === 0 ? (
-            <p className="mt-2 text-xs text-zinc-500">Add inventory items first, then AI writes the listing for you.</p>
+            <p className="mt-2 text-xs text-zinc-500 dark:text-neutral-400">Add inventory items first, then AI writes the listing for you.</p>
           ) : (
             <>
               <select
@@ -198,11 +198,11 @@ export function Composer({
                 {generating ? "Writing listing…" : "Generate with AI"}
               </button>
               {!aiConfigured && (
-                <p className="mt-1.5 text-xs text-zinc-400">Requires ANTHROPIC_API_KEY in .env</p>
+                <p className="mt-1.5 text-xs text-zinc-400 dark:text-neutral-500">Requires ANTHROPIC_API_KEY in .env</p>
               )}
-              {aiError && <p role="alert" className="mt-1.5 text-xs text-red-600">{aiError}</p>}
+              {aiError && <p role="alert" className="mt-1.5 text-xs text-red-600 dark:text-red-400">{aiError}</p>}
               {suggestedPrice && (
-                <p className="mt-1.5 text-xs text-emerald-700">
+                <p className="mt-1.5 text-xs text-orange-700 dark:text-orange-400">
                   AI suggested price: <span className="money font-semibold">${suggestedPrice}</span>
                 </p>
               )}
@@ -210,7 +210,7 @@ export function Composer({
           )}
         </div>
 
-        <h2 className="mb-4 text-sm font-semibold text-zinc-900">Write once</h2>
+        <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-neutral-100">Write once</h2>
         <div className="space-y-4">
           <div>
             <label className={labelCls}>Item title *</label>
@@ -251,7 +251,7 @@ export function Composer({
 
       <div className="space-y-4 lg:col-span-3">
         {!hasContent ? (
-          <Card className="p-8 text-center text-sm text-zinc-400">
+          <Card className="p-8 text-center text-sm text-zinc-400 dark:text-neutral-500">
             Start typing on the left: formatted listings for every marketplace appear here.
           </Card>
         ) : (
@@ -261,21 +261,21 @@ export function Composer({
             return (
               <Card key={profile.key} className="p-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-zinc-900">{profile.label}</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">{profile.label}</h3>
                   <div className="flex gap-2">
                     <CopyButton text={title} />
                     <CopyButton text={`${title}\n\n${body}`} />
                   </div>
                 </div>
-                <p className="mt-1 text-xs text-zinc-400">{profile.tips}</p>
-                <div className="mt-3 rounded-lg bg-zinc-50 p-3">
-                  <p className="text-sm font-medium text-zinc-800">
+                <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">{profile.tips}</p>
+                <div className="mt-3 rounded-lg bg-zinc-50 dark:bg-neutral-800/50 p-3">
+                  <p className="text-sm font-medium text-zinc-800 dark:text-neutral-200">
                     {title}{" "}
-                    <span className={`text-xs ${title.length >= profile.titleLimit ? "text-amber-600" : "text-zinc-400"}`}>
+                    <span className={`text-xs ${title.length >= profile.titleLimit ? "text-amber-600" : "text-zinc-400 dark:text-neutral-500"}`}>
                       ({title.length}/{profile.titleLimit})
                     </span>
                   </p>
-                  <p className="mt-2 whitespace-pre-wrap text-xs text-zinc-600">{body}</p>
+                  <p className="mt-2 whitespace-pre-wrap text-xs text-zinc-600 dark:text-neutral-400">{body}</p>
                 </div>
               </Card>
             );

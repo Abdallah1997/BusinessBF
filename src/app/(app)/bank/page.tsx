@@ -59,18 +59,18 @@ export default async function BankPage() {
       />
 
       {!aiOn && (
-        <Card className="mb-6 border-amber-200 bg-amber-50/60 p-4 animate-fade-up">
-          <p className="text-sm text-amber-800">
-            AI classification is off: add <code className="rounded bg-amber-100 px-1">ANTHROPIC_API_KEY</code> to{" "}
-            <code className="rounded bg-amber-100 px-1">.env</code> and restart. Imports still work; you classify manually.
+        <Card className="mb-6 border-amber-200 dark:border-amber-900 bg-amber-50/60 dark:bg-amber-950/30 p-4 animate-fade-up">
+          <p className="text-sm text-amber-800 dark:text-amber-300">
+            AI classification is off: add <code className="rounded bg-amber-100 dark:bg-amber-900/40 px-1">ANTHROPIC_API_KEY</code> to{" "}
+            <code className="rounded bg-amber-100 dark:bg-amber-900/40 px-1">.env</code> and restart. Imports still work; you classify manually.
           </p>
         </Card>
       )}
 
       <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <Card className="p-5 lg:col-span-2 animate-fade-up">
-          <h2 className="text-sm font-semibold text-zinc-900">Accounts</h2>
-          <p className="mt-1 text-xs text-zinc-400">
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Accounts</h2>
+          <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">
             Bank logins go to Plaid, never to BusinessBF. We store the account name, institution and last 4 digits;
             access tokens are encrypted at rest.
           </p>
@@ -79,12 +79,12 @@ export default async function BankPage() {
             {plaidOn ? (
               <PlaidLinkButton />
             ) : (
-              <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50/60 p-3">
-                <p className="text-xs text-zinc-500">
+              <div className="rounded-lg border border-dashed border-zinc-300 dark:border-neutral-700 bg-zinc-50/60 dark:bg-neutral-900/60 p-3">
+                <p className="text-xs text-zinc-500 dark:text-neutral-400">
                   Automatic bank sync uses <span className="font-semibold">Plaid</span>. Add{" "}
-                  <code className="rounded bg-zinc-100 px-1">PLAID_CLIENT_ID</code>,{" "}
-                  <code className="rounded bg-zinc-100 px-1">PLAID_SECRET</code> and{" "}
-                  <code className="rounded bg-zinc-100 px-1">ENCRYPTION_KEY</code> to .env (free sandbox keys at
+                  <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">PLAID_CLIENT_ID</code>,{" "}
+                  <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">PLAID_SECRET</code> and{" "}
+                  <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">ENCRYPTION_KEY</code> to .env (free sandbox keys at
                   dashboard.plaid.com), restart, and a Connect button appears here. CSV import below works either way.
                 </p>
               </div>
@@ -94,18 +94,18 @@ export default async function BankPage() {
           {accounts.length > 0 && (
             <ul className="mt-4 space-y-2 stagger-children">
               {accounts.map((a) => (
-                <li key={a.id} className="rounded-lg border border-zinc-200 px-3 py-2">
+                <li key={a.id} className="rounded-lg border border-zinc-200 dark:border-neutral-800 px-3 py-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-zinc-900">
+                      <p className="text-sm font-medium text-zinc-900 dark:text-neutral-100">
                         {a.nickname}
                         {a.plaidItemId && (
-                          <span className="ml-2 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                          <span className="ml-2 rounded-full bg-orange-50 dark:bg-orange-950/30 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-orange-700 dark:text-orange-400">
                             Plaid
                           </span>
                         )}
                       </p>
-                      <p className="text-xs text-zinc-400">
+                      <p className="text-xs text-zinc-400 dark:text-neutral-500">
                         {[a.institution, a.last4 ? `····${a.last4}` : null].filter(Boolean).join(" · ") || "No details"}
                       </p>
                     </div>
@@ -149,17 +149,17 @@ export default async function BankPage() {
         </Card>
 
         <Card className="p-5 lg:col-span-3 animate-fade-up">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-neutral-100">
             Import transactions
             {aiOn && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 dark:bg-orange-950/30 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-400">
                 <IconSparkle className="h-3 w-3" /> AI classification on
               </span>
             )}
           </h2>
-          <p className="mt-1 text-xs text-zinc-400">
+          <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">
             Download a CSV from your bank (most banks export this) with columns{" "}
-            <code className="rounded bg-zinc-100 px-1">date, description, amount</code>: spending negative, deposits positive.
+            <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">date, description, amount</code>: spending negative, deposits positive.
             AI suggests expense vs. inventory for each spend; you confirm or dismiss below.
           </p>
           <div className="mt-4">
@@ -184,15 +184,15 @@ export default async function BankPage() {
         </Card>
       </div>
 
-      <h2 className="mb-3 text-sm font-semibold text-zinc-900 animate-fade-up">
-        Review queue {pending.length > 0 && <span className="text-zinc-400">({pending.length})</span>}
+      <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-neutral-100 animate-fade-up">
+        Review queue {pending.length > 0 && <span className="text-zinc-400 dark:text-neutral-500">({pending.length})</span>}
       </h2>
       {pending.length === 0 ? (
         <EmptyState title="Nothing to review" hint="Import a bank CSV and suggested classifications appear here." />
       ) : (
         <Card className="animate-fade-up">
           <table className="w-full">
-            <thead className="border-b border-zinc-200">
+            <thead className="border-b border-zinc-200 dark:border-neutral-800">
               <tr>
                 <th className={thCls}>Date</th>
                 <th className={thCls}>Description</th>
@@ -202,17 +202,17 @@ export default async function BankPage() {
                 <th className={thCls}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 stagger-children">
+            <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800 stagger-children">
               {pending.map((t) => {
                 const suggested = t.aiSuggestion ?? (t.amountCents >= 0 ? "IGNORE" : "EXPENSE");
                 return (
-                  <tr key={t.id} className="transition-colors hover:bg-zinc-50/50">
+                  <tr key={t.id} className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-neutral-800/40">
                     <td className={`${tdCls} whitespace-nowrap`}>{t.date.toLocaleDateString("en-US")}</td>
                     <td className={tdCls}>
-                      <p className="font-medium text-zinc-900">{t.description}</p>
-                      {t.aiRationale && <p className="text-xs text-zinc-400">{t.aiRationale}</p>}
+                      <p className="font-medium text-zinc-900 dark:text-neutral-100">{t.description}</p>
+                      {t.aiRationale && <p className="text-xs text-zinc-400 dark:text-neutral-500">{t.aiRationale}</p>}
                     </td>
-                    <td className={`${tdMoney} ${t.amountCents < 0 ? "text-zinc-700" : "text-emerald-600"}`}>
+                    <td className={`${tdMoney} ${t.amountCents < 0 ? "text-zinc-700 dark:text-neutral-300" : "text-orange-600 dark:text-orange-400"}`}>
                       {formatCents(t.amountCents)}
                     </td>
                     <td className={tdCls}>
@@ -223,11 +223,11 @@ export default async function BankPage() {
                             label={t.aiSuggestion.toLowerCase()}
                           />
                           {t.aiConfidence != null && (
-                            <p className="mt-1 text-xs text-zinc-400">{Math.round(t.aiConfidence * 100)}% confident</p>
+                            <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">{Math.round(t.aiConfidence * 100)}% confident</p>
                           )}
                         </div>
                       ) : (
-                        <span className="text-xs text-zinc-400">—</span>
+                        <span className="text-xs text-zinc-400 dark:text-neutral-500">—</span>
                       )}
                     </td>
                     <td className={tdCls} colSpan={2}>
@@ -246,7 +246,7 @@ export default async function BankPage() {
                       </form>
                       <form action={dismissTransaction} className="mt-1">
                         <input type="hidden" name="id" value={t.id} />
-                        <button type="submit" className="text-xs font-medium text-zinc-400 hover:text-zinc-700">
+                        <button type="submit" className="text-xs font-medium text-zinc-400 dark:text-neutral-500 hover:text-zinc-700 dark:hover:text-neutral-300">
                           Dismiss (personal / not business)
                         </button>
                       </form>
@@ -261,10 +261,10 @@ export default async function BankPage() {
 
       {recent.length > 0 && (
         <>
-          <h2 className="mt-8 mb-3 text-sm font-semibold text-zinc-900">Recently processed</h2>
+          <h2 className="mt-8 mb-3 text-sm font-semibold text-zinc-900 dark:text-neutral-100">Recently processed</h2>
           <Card>
             <table className="w-full">
-              <tbody className="divide-y divide-zinc-100">
+              <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800">
                 {recent.map((t) => (
                   <tr key={t.id}>
                     <td className={`${tdCls} whitespace-nowrap`}>{t.date.toLocaleDateString("en-US")}</td>

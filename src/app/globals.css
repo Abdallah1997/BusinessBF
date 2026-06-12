@@ -1,10 +1,19 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: .dark on <html> switches the whole app */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  /* Neutrals tinted toward the brand's emerald hue (165), never pure gray/black */
-  --background: oklch(98.4% 0.004 165);
-  --foreground: oklch(21% 0.006 165);
+  /* Light: neutrals tinted toward the brand's orange hue (55) */
+  --background: oklch(98.4% 0.003 75);
+  --foreground: oklch(21% 0.005 75);
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dark {
+  /* Matte black, not pure #000 */
+  --background: oklch(14.5% 0.004 75);
+  --foreground: oklch(92% 0.004 75);
 }
 
 @theme inline {
@@ -20,7 +29,7 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* ---------- Motion system (taste: fade-up entrances, staggered cascades) ---------- */
+/* ---------- Motion system ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
   @keyframes fade-up {
@@ -87,6 +96,10 @@ body {
   background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
   background-size: 200% 100%;
 }
+.dark .skeleton {
+  background: linear-gradient(90deg, #1c1917 25%, #292524 50%, #1c1917 75%);
+  background-size: 200% 100%;
+}
 @media (prefers-reduced-motion: no-preference) {
   .skeleton {
     animation: shimmer 1.4s linear infinite;
@@ -97,4 +110,14 @@ body {
 .money {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
+}
+
+/* Glass nav surface (template style) */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.dark .glass {
+  background: rgba(12, 11, 10, 0.72);
 }

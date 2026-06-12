@@ -71,7 +71,7 @@ export default async function DashboardPage() {
       {delistAlertCount > 0 && (
         <Link
           href="/listings"
-          className="mb-6 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-100 animate-fade-up"
+          className="mb-6 flex items-center gap-2 rounded-xl border border-amber-300 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 px-4 py-3 text-sm font-medium text-amber-800 dark:text-amber-300 transition-colors hover:bg-amber-100 animate-fade-up"
         >
           <IconAlert className="h-4 w-4 shrink-0" />
           {delistAlertCount} listing{delistAlertCount > 1 ? "s" : ""} still active for items that already sold: review now
@@ -91,19 +91,19 @@ export default async function DashboardPage() {
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
         <Card className="p-5 lg:col-span-2">
-          <h2 className="text-sm font-semibold text-zinc-900">Profit by month ({now.getFullYear()})</h2>
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Profit by month ({now.getFullYear()})</h2>
           <div className="mt-4 flex h-40 items-end gap-1.5">
             {monthlyProfit.map((v, m) => (
               <div key={m} className="flex flex-1 flex-col items-center gap-1">
                 <div
-                  className={`w-full rounded-t animate-grow-bar ${v >= 0 ? "bg-emerald-500" : "bg-red-400"}`}
+                  className={`w-full rounded-t animate-grow-bar ${v >= 0 ? "bg-orange-500" : "bg-red-400"}`}
                   style={{
                     height: `${Math.max(2, (Math.abs(v) / maxAbs) * 130)}px`,
                     animationDelay: `${m * 40}ms`,
                   }}
                   title={`${monthNames[m]}: ${formatCents(v)}`}
                 />
-                <span className="text-[10px] text-zinc-400">{monthNames[m][0]}</span>
+                <span className="text-[10px] text-zinc-400 dark:text-neutral-500">{monthNames[m][0]}</span>
               </div>
             ))}
           </div>
@@ -111,8 +111,8 @@ export default async function DashboardPage() {
 
         <Card className="lg:col-span-3">
           <div className="flex items-center justify-between px-5 pt-5">
-            <h2 className="text-sm font-semibold text-zinc-900">Recent sales</h2>
-            <Link href="/sales" className="text-xs font-medium text-emerald-600 hover:underline">
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Recent sales</h2>
+            <Link href="/sales" className="text-xs font-medium text-orange-600 dark:text-orange-400 hover:underline">
               View all →
             </Link>
           </div>
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <table className="mt-3 w-full">
-              <thead className="border-b border-zinc-200">
+              <thead className="border-b border-zinc-200 dark:border-neutral-800">
                 <tr>
                   <th className={thCls}>Date</th>
                   <th className={thCls}>Item</th>
@@ -130,7 +130,7 @@ export default async function DashboardPage() {
                   <th className={thCls}>Profit</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100">
+              <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800">
                 {recentSales.map((s) => {
                   const profit = profitCents(s);
                   return (
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
                       <td className={`${tdCls} whitespace-nowrap`}>{s.soldAt.toLocaleDateString("en-US")}</td>
                       <td className={tdCls}>{s.item?.name ?? "—"}</td>
                       <td className={tdCls}>{MARKETPLACE_LABELS[s.marketplace as Marketplace] ?? s.marketplace}</td>
-                      <td className={`${tdMoney} font-semibold ${profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                      <td className={`${tdMoney} font-semibold ${profit >= 0 ? "text-orange-600 dark:text-orange-400" : "text-red-600 dark:text-red-400"}`}>
                         {formatCents(profit)}
                       </td>
                     </tr>

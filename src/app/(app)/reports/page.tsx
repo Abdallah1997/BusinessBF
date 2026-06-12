@@ -10,8 +10,8 @@ export const metadata = { title: "Reports" };
 function Row({ label, value, bold = false, indent = false }: { label: string; value: string; bold?: boolean; indent?: boolean }) {
   return (
     <div className={`flex items-center justify-between py-2 ${indent ? "pl-4" : ""}`}>
-      <span className={`text-sm ${bold ? "font-semibold text-zinc-900" : "text-zinc-600"}`}>{label}</span>
-      <span className={`text-sm tabular-nums ${bold ? "font-bold text-zinc-900" : "text-zinc-700"}`}>{value}</span>
+      <span className={`text-sm ${bold ? "font-semibold text-zinc-900 dark:text-neutral-100" : "text-zinc-600 dark:text-neutral-400"}`}>{label}</span>
+      <span className={`text-sm tabular-nums ${bold ? "font-bold text-zinc-900 dark:text-neutral-100" : "text-zinc-700 dark:text-neutral-300"}`}>{value}</span>
     </div>
   );
 }
@@ -48,7 +48,7 @@ export default async function ReportsPage({
                 key={y}
                 href={`/reports?year=${y}`}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
-                  y === year ? "bg-emerald-600 text-white" : "border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50"
+                  y === year ? "bg-orange-600 text-white" : "border border-zinc-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-zinc-700 dark:text-neutral-300 hover:bg-zinc-50 dark:hover:bg-neutral-800"
                 }`}
               >
                 {y}
@@ -60,10 +60,10 @@ export default async function ReportsPage({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-neutral-400">
             Profit &amp; Loss: {report.year}
           </h2>
-          <div className="mt-4 divide-y divide-zinc-100">
+          <div className="mt-4 divide-y divide-zinc-100 dark:divide-neutral-800">
             <Row label={`Gross receipts (${report.saleCount} sales)`} value={formatCents(report.grossReceiptsCents)} />
             <Row label="Cost of goods sold" value={`(${formatCents(report.cogsCents)})`} />
             <Row label="Gross profit" value={formatCents(report.grossProfitCents)} bold />
@@ -77,28 +77,28 @@ export default async function ReportsPage({
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-neutral-400">
             Expenses by Schedule C category: {report.year}
           </h2>
           {expenseEntries.length === 0 ? (
-            <p className="mt-4 text-sm text-zinc-400">No expenses recorded for {report.year}.</p>
+            <p className="mt-4 text-sm text-zinc-400 dark:text-neutral-500">No expenses recorded for {report.year}.</p>
           ) : (
-            <div className="mt-4 divide-y divide-zinc-100">
+            <div className="mt-4 divide-y divide-zinc-100 dark:divide-neutral-800">
               {expenseEntries.map(([category, cents]) => (
                 <Row key={category} label={EXPENSE_CATEGORY_LABELS[category] ?? category} value={formatCents(cents)} />
               ))}
               <Row label="Total" value={formatCents(report.totalExpensesCents)} bold />
             </div>
           )}
-          <p className="mt-4 text-xs text-zinc-400">
+          <p className="mt-4 text-xs text-zinc-400 dark:text-neutral-500">
             Line numbers reference IRS Schedule C (Form 1040). This summary is a bookkeeping aid, not tax advice.
           </p>
         </Card>
       </div>
 
       <Card className="mt-6 p-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Export your data</h2>
-        <p className="mt-1 text-sm text-zinc-500">Everything you enter is yours: download it as CSV anytime.</p>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-neutral-400">Export your data</h2>
+        <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">Everything you enter is yours: download it as CSV anytime.</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <a href={`/api/export/sales?year=${year}`} className={btnGhost} download>Sales {year} (CSV)</a>
           <a href={`/api/export/expenses?year=${year}`} className={btnGhost} download>Expenses {year} (CSV)</a>

@@ -46,16 +46,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-neutral-950 px-4">
       <div className="w-full max-w-sm">
-        <Link href="/" className="mb-8 block text-center text-xl font-bold tracking-tight text-zinc-900">
-          Business<span className="text-emerald-600">BF</span>
+        <Link href="/" className="mb-8 block text-center text-xl font-bold tracking-tight text-zinc-900 dark:text-neutral-100">
+          Business<span className="text-orange-600 dark:text-orange-400">BF</span>
         </Link>
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h1 className="text-lg font-semibold text-zinc-900">
+        <div className="rounded-2xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-sm">
+          <h1 className="text-lg font-semibold text-zinc-900 dark:text-neutral-100">
             {mode === "signup" ? "Create your account" : "Welcome back"}
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-zinc-500 dark:text-neutral-400">
             {mode === "signup" ? BRAND.tagline : "Sign in to your account."}
           </p>
 
@@ -83,12 +83,12 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
                 className={inputCls}
               />
               {mode === "signup" && (
-                <p className="mt-1 text-xs text-zinc-400">At least 10 characters.</p>
+                <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">At least 10 characters.</p>
               )}
             </div>
 
             {error && (
-              <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+              <p role="alert" className="rounded-lg bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-400">
                 {error}
               </p>
             )}
@@ -99,11 +99,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           </form>
         </div>
 
-        <p className="mt-4 text-center text-sm text-zinc-500">
+        <p className="mt-4 text-center text-sm text-zinc-500 dark:text-neutral-400">
           {mode === "signup" ? (
-            <>Already have an account? <Link href="/login" className="font-medium text-emerald-600 hover:underline">Sign in</Link></>
+            <>Already have an account? <Link href="/login" className="font-medium text-orange-600 dark:text-orange-400 hover:underline">Sign in</Link></>
           ) : (
-            <>New here? <Link href="/signup" className="font-medium text-emerald-600 hover:underline">Create an account</Link></>
+            <>New here? <Link href="/signup" className="font-medium text-orange-600 dark:text-orange-400 hover:underline">Create an account</Link></>
           )}
         </p>
       </div>

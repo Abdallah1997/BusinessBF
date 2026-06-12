@@ -25,8 +25,8 @@ export function AiInsights({ aiConfigured }: { aiConfigured: boolean }) {
   return (
     <Card className="p-5">
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
-          <IconSparkle className="h-4 w-4 text-emerald-600" /> AI insights
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-neutral-100">
+          <IconSparkle className="h-4 w-4 text-orange-600 dark:text-orange-400" /> AI insights
         </h2>
         <button
           type="button"
@@ -40,11 +40,11 @@ export function AiInsights({ aiConfigured }: { aiConfigured: boolean }) {
       </div>
 
       {!aiConfigured && (
-        <p className="mt-3 text-xs text-zinc-400">
-          Requires <code className="rounded bg-zinc-100 px-1">ANTHROPIC_API_KEY</code> in .env
+        <p className="mt-3 text-xs text-zinc-400 dark:text-neutral-500">
+          Requires <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">ANTHROPIC_API_KEY</code> in .env
         </p>
       )}
-      {error && <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
+      {error && <p role="alert" className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {loading && (
         <div className="mt-4 space-y-2">
@@ -57,8 +57,8 @@ export function AiInsights({ aiConfigured }: { aiConfigured: boolean }) {
       {insights && !loading && (
         <ul className="mt-4 space-y-2.5 stagger-children">
           {insights.map((line, i) => (
-            <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-zinc-700">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+            <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-zinc-700 dark:text-neutral-300">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />
               {line}
             </li>
           ))}
@@ -66,7 +66,7 @@ export function AiInsights({ aiConfigured }: { aiConfigured: boolean }) {
       )}
 
       {!insights && !loading && aiConfigured && (
-        <p className="mt-3 text-xs text-zinc-400">
+        <p className="mt-3 text-xs text-zinc-400 dark:text-neutral-500">
           AI reads your sales, fees, expenses and stale listings, then tells you what to do about them.
         </p>
       )}

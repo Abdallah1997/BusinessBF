@@ -64,7 +64,7 @@ export default async function InventoryPage() {
       ) : (
         <Card className="animate-fade-up">
           <table className="w-full">
-            <thead className="border-b border-zinc-200">
+            <thead className="border-b border-zinc-200 dark:border-neutral-800">
               <tr>
                 <th className={thCls}>Item</th>
                 <th className={thCls}>SKU</th>
@@ -75,13 +75,13 @@ export default async function InventoryPage() {
                 <th className={thCls}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 stagger-children">
+            <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800 stagger-children">
               {items.map((item) => (
-                <tr key={item.id} className="transition-colors hover:bg-zinc-50/50">
+                <tr key={item.id} className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-neutral-800/40">
                   <td className={tdCls}>
-                    <p className="font-medium text-zinc-900">{item.name}</p>
+                    <p className="font-medium text-zinc-900 dark:text-neutral-100">{item.name}</p>
                     {(item.brand || item.size) && (
-                      <p className="text-xs text-zinc-400">
+                      <p className="text-xs text-zinc-400 dark:text-neutral-500">
                         {[item.brand, item.size].filter(Boolean).join(" · ")}
                       </p>
                     )}
@@ -91,7 +91,7 @@ export default async function InventoryPage() {
                   <td className={tdCls}>{item.quantity}</td>
                   <td className={tdCls}>
                     {item.listings.length === 0 ? (
-                      <span className="text-zinc-400">Not listed</span>
+                      <span className="text-zinc-400 dark:text-neutral-500">Not listed</span>
                     ) : (
                       <span className="text-xs">
                         {item.listings.map((l) => MARKETPLACE_LABELS[l.marketplace as Marketplace] ?? l.marketplace).join(", ")}
@@ -102,7 +102,7 @@ export default async function InventoryPage() {
                   <td className={`${tdCls} text-right whitespace-nowrap`}>
                     <Link
                       href={`/inventory/${item.id}`}
-                      className="mr-2 text-xs font-medium text-emerald-600 hover:underline"
+                      className="mr-2 text-xs font-medium text-orange-600 dark:text-orange-400 hover:underline"
                     >
                       Edit
                     </Link>

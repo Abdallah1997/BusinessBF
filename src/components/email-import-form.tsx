@@ -45,16 +45,16 @@ export function EmailImportForm() {
 
     return (
       <div className="animate-fade-up">
-        <p className="mb-1 flex items-center gap-2 text-sm text-emerald-700">
+        <p className="mb-1 flex items-center gap-2 text-sm text-orange-700 dark:text-orange-400">
           <IconSparkle className="h-4 w-4" />
           Found {order.items.length} item{order.items.length > 1 ? "s" : ""}
           {order.vendor ? ` from ${order.vendor}` : ""}
           {order.orderDate ? ` · ordered ${order.orderDate}` : ""}
         </p>
-        <p className="mb-4 text-xs text-zinc-400">Uncheck anything you don&apos;t want, then add to inventory.</p>
+        <p className="mb-4 text-xs text-zinc-400 dark:text-neutral-500">Uncheck anything you don&apos;t want, then add to inventory.</p>
 
         <table className="w-full">
-          <thead className="border-b border-zinc-200">
+          <thead className="border-b border-zinc-200 dark:border-neutral-800">
             <tr>
               <th className={thCls}></th>
               <th className={thCls}>Item</th>
@@ -62,7 +62,7 @@ export function EmailImportForm() {
               <th className={thCls}>Unit cost</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 stagger-children">
+          <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800 stagger-children">
             {order.items.map((item, i) => (
               <tr key={i}>
                 <td className={tdCls}>
@@ -72,12 +72,12 @@ export function EmailImportForm() {
                     onChange={() =>
                       setSelected((prev) => prev.map((v, idx) => (idx === i ? !v : v)))
                     }
-                    className="h-4 w-4 accent-emerald-600"
+                    className="h-4 w-4 accent-orange-600"
                   />
                 </td>
                 <td className={tdCls}>
-                  <span className="font-medium text-zinc-900">{item.name}</span>
-                  {item.brand && <span className="ml-2 text-xs text-zinc-400">{item.brand}</span>}
+                  <span className="font-medium text-zinc-900 dark:text-neutral-100">{item.name}</span>
+                  {item.brand && <span className="ml-2 text-xs text-zinc-400 dark:text-neutral-500">{item.brand}</span>}
                 </td>
                 <td className={tdCls}>{item.quantity}</td>
                 <td className={tdMoney}>${item.unitPriceDollars}</td>
@@ -93,7 +93,7 @@ export function EmailImportForm() {
           <button
             type="button"
             onClick={() => setOrder(null)}
-            className="mb-0 mt-4 self-start text-xs font-medium text-zinc-500 hover:text-zinc-800"
+            className="mb-0 mt-4 self-start text-xs font-medium text-zinc-500 dark:text-neutral-400 hover:text-zinc-800 dark:hover:text-neutral-200"
           >
             Start over
           </button>
@@ -122,7 +122,7 @@ export function EmailImportForm() {
           <IconMail className="h-4 w-4" />
           {extracting ? "Reading email…" : "Extract items with AI"}
         </button>
-        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
     </form>
   );

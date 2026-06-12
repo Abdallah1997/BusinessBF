@@ -53,7 +53,7 @@ export default async function ExpensesPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
         <Card className="p-5">
-          <h2 className="mb-4 text-sm font-semibold text-zinc-900">Add expense</h2>
+          <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-neutral-100">Add expense</h2>
           <ActionForm action={createExpense} submitLabel="Add expense">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -85,8 +85,8 @@ export default async function ExpensesPage() {
         </Card>
 
         <Card className="p-5">
-          <h2 className="mb-4 text-sm font-semibold text-zinc-900">
-            Log mileage <span className="font-normal text-zinc-400">(${(MILEAGE_RATE_CENTS_PER_MILE / 100).toFixed(2)}/mi standard rate)</span>
+          <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-neutral-100">
+            Log mileage <span className="font-normal text-zinc-400 dark:text-neutral-500">(${(MILEAGE_RATE_CENTS_PER_MILE / 100).toFixed(2)}/mi standard rate)</span>
           </h2>
           <ActionForm action={createMileage} submitLabel="Log miles">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -109,13 +109,13 @@ export default async function ExpensesPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-zinc-900">Recent expenses</h2>
+          <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-neutral-100">Recent expenses</h2>
           {expenses.length === 0 ? (
             <EmptyState title="No expenses yet" hint="Every recorded expense lowers your taxable income." />
           ) : (
             <Card>
               <table className="w-full">
-                <thead className="border-b border-zinc-200">
+                <thead className="border-b border-zinc-200 dark:border-neutral-800">
                   <tr>
                     <th className={thCls}>Date</th>
                     <th className={thCls}>Category</th>
@@ -123,17 +123,17 @@ export default async function ExpensesPage() {
                     <th className={thCls}></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
+                <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800">
                   {expenses.map((e) => (
                     <tr key={e.id}>
                       <td className={`${tdCls} whitespace-nowrap`}>{e.date.toLocaleDateString("en-US")}</td>
                       <td className={tdCls}>
                         <p>{EXPENSE_CATEGORY_LABELS[e.category as ExpenseCategory]?.split(" (")[0] ?? e.category}</p>
-                        {e.vendor && <p className="text-xs text-zinc-400">{e.vendor}</p>}
+                        {e.vendor && <p className="text-xs text-zinc-400 dark:text-neutral-500">{e.vendor}</p>}
                       </td>
                       <td className={`${tdCls} tabular-nums`}>{formatCents(e.amountCents)}</td>
                       <td className={`${tdCls} text-right whitespace-nowrap`}>
-                        <Link href={`/expenses/${e.id}`} className="mr-2 text-xs font-medium text-emerald-600 hover:underline">
+                        <Link href={`/expenses/${e.id}`} className="mr-2 text-xs font-medium text-orange-600 dark:text-orange-400 hover:underline">
                           Edit
                         </Link>
                         <form action={deleteExpense} className="inline-block">
@@ -150,13 +150,13 @@ export default async function ExpensesPage() {
         </div>
 
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-zinc-900">Mileage log</h2>
+          <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-neutral-100">Mileage log</h2>
           {mileage.length === 0 ? (
             <EmptyState title="No mileage logged" hint="Sourcing trips and post office runs are deductible." />
           ) : (
             <Card>
               <table className="w-full">
-                <thead className="border-b border-zinc-200">
+                <thead className="border-b border-zinc-200 dark:border-neutral-800">
                   <tr>
                     <th className={thCls}>Date</th>
                     <th className={thCls}>Miles</th>
@@ -164,7 +164,7 @@ export default async function ExpensesPage() {
                     <th className={thCls}></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
+                <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800">
                   {mileage.map((m) => (
                     <tr key={m.id}>
                       <td className={`${tdCls} whitespace-nowrap`}>{m.date.toLocaleDateString("en-US")}</td>

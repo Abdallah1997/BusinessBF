@@ -25,23 +25,23 @@ export default async function EmailImportPage() {
       />
 
       {!aiOn && (
-        <Card className="mb-6 border-amber-200 bg-amber-50/60 p-4 animate-fade-up">
-          <p className="text-sm text-amber-800">
-            Add <code className="rounded bg-amber-100 px-1">ANTHROPIC_API_KEY</code> to{" "}
-            <code className="rounded bg-amber-100 px-1">.env</code> and restart to enable email extraction.
+        <Card className="mb-6 border-amber-200 dark:border-amber-900 bg-amber-50/60 dark:bg-amber-950/30 p-4 animate-fade-up">
+          <p className="text-sm text-amber-800 dark:text-amber-300">
+            Add <code className="rounded bg-amber-100 dark:bg-amber-900/40 px-1">ANTHROPIC_API_KEY</code> to{" "}
+            <code className="rounded bg-amber-100 dark:bg-amber-900/40 px-1">.env</code> and restart to enable email extraction.
           </p>
         </Card>
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <Card className="p-5 lg:col-span-3 animate-fade-up">
-          <h2 className="mb-4 text-sm font-semibold text-zinc-900">Import an order email</h2>
+          <h2 className="mb-4 text-sm font-semibold text-zinc-900 dark:text-neutral-100">Import an order email</h2>
           <EmailImportForm />
         </Card>
 
         <Card className="p-5 lg:col-span-2 animate-fade-up">
-          <h2 className="text-sm font-semibold text-zinc-900">Your purchase email</h2>
-          <p className="mt-1 text-xs text-zinc-400">
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Your purchase email</h2>
+          <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">
             The address your order confirmations arrive at. Automatic inbox sync (Gmail/Outlook OAuth) is on the
             roadmap: for now, forward or paste emails on the left.
           </p>

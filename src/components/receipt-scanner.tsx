@@ -34,7 +34,7 @@ export function ReceiptScanner() {
   if (extracted) {
     return (
       <div className="animate-fade-up">
-        <p className="mb-4 flex items-center gap-2 text-sm text-emerald-700">
+        <p className="mb-4 flex items-center gap-2 text-sm text-orange-700 dark:text-orange-400">
           <IconSparkle className="h-4 w-4" />
           Receipt read: review the fields below, then save.
         </p>
@@ -55,7 +55,7 @@ export function ReceiptScanner() {
         <button
           type="button"
           onClick={() => setExtracted(null)}
-          className="mt-3 text-xs font-medium text-zinc-500 hover:text-zinc-800"
+          className="mt-3 text-xs font-medium text-zinc-500 dark:text-neutral-400 hover:text-zinc-800 dark:hover:text-neutral-200"
         >
           Scan a different receipt
         </button>
@@ -74,9 +74,9 @@ export function ReceiptScanner() {
           <IconCamera className="h-4 w-4" />
           {scanning ? "Reading receipt…" : "Scan with AI"}
         </button>
-        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
-      <p className="mt-2 text-xs text-zinc-400">
+      <p className="mt-2 text-xs text-zinc-400 dark:text-neutral-500">
         AI reads the store, date, items and total, then pre-fills the inventory form for your review.
       </p>
     </form>

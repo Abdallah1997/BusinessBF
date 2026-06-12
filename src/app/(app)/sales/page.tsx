@@ -46,7 +46,7 @@ export default async function SalesPage() {
       />
 
       <details className="mb-6">
-        <summary className="cursor-pointer select-none rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50">
+        <summary className="cursor-pointer select-none rounded-lg border border-zinc-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-zinc-700 dark:text-neutral-300 hover:bg-zinc-50 dark:hover:bg-neutral-800">
           + Record sale
         </summary>
         <Card className="mt-3 p-5">
@@ -109,7 +109,7 @@ export default async function SalesPage() {
       ) : (
         <Card>
           <table className="w-full">
-            <thead className="border-b border-zinc-200">
+            <thead className="border-b border-zinc-200 dark:border-neutral-800">
               <tr>
                 <th className={thCls}>Date</th>
                 <th className={thCls}>Item</th>
@@ -122,21 +122,21 @@ export default async function SalesPage() {
                 <th className={thCls}></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y divide-zinc-100 dark:divide-neutral-800">
               {sales.map((s) => {
                 const profit = profitCents(s);
                 return (
-                  <tr key={s.id} className="hover:bg-zinc-50/50">
+                  <tr key={s.id} className="hover:bg-zinc-50/50 dark:hover:bg-neutral-800/40">
                     <td className={`${tdCls} whitespace-nowrap`}>{s.soldAt.toLocaleDateString("en-US")}</td>
                     <td className={tdCls}>
-                      <span className="font-medium text-zinc-900">{s.item?.name ?? "—"}</span>
+                      <span className="font-medium text-zinc-900 dark:text-neutral-100">{s.item?.name ?? "—"}</span>
                     </td>
                     <td className={tdCls}>{MARKETPLACE_LABELS[s.marketplace as Marketplace] ?? s.marketplace}</td>
                     <td className={`${tdCls} tabular-nums`}>{formatCents(s.salePriceCents + s.shippingChargedCents)}</td>
                     <td className={`${tdCls} tabular-nums`}>{formatCents(s.feesCents)}</td>
                     <td className={`${tdCls} tabular-nums`}>{formatCents(s.shippingCostCents)}</td>
                     <td className={`${tdCls} tabular-nums`}>{formatCents(s.costOfGoodsCents)}</td>
-                    <td className={`${tdCls} tabular-nums font-semibold ${profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                    <td className={`${tdCls} tabular-nums font-semibold ${profit >= 0 ? "text-orange-600 dark:text-orange-400" : "text-red-600 dark:text-red-400"}`}>
                       {formatCents(profit)}
                     </td>
                     <td className={`${tdCls} text-right`}>

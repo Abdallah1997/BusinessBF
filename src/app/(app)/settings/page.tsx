@@ -14,24 +14,24 @@ export default async function SettingsPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
-          <h2 className="text-sm font-semibold text-zinc-900">Account</h2>
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Account</h2>
           <dl className="mt-4 space-y-3 text-sm">
             <div>
-              <dt className="text-xs font-medium text-zinc-500">Name</dt>
-              <dd className="text-zinc-900">{user.name}</dd>
+              <dt className="text-xs font-medium text-zinc-500 dark:text-neutral-400">Name</dt>
+              <dd className="text-zinc-900 dark:text-neutral-100">{user.name}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium text-zinc-500">Email</dt>
-              <dd className="text-zinc-900">{user.email}</dd>
+              <dt className="text-xs font-medium text-zinc-500 dark:text-neutral-400">Email</dt>
+              <dd className="text-zinc-900 dark:text-neutral-100">{user.email}</dd>
             </div>
           </dl>
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-sm font-semibold text-zinc-900">Import inventory from CSV</h2>
-          <p className="mt-1 text-xs text-zinc-500">
-            Header row required. Columns: <code className="rounded bg-zinc-100 px-1">name, cost, quantity</code>{" "}
-            plus optional <code className="rounded bg-zinc-100 px-1">sku, brand, category, size, condition, purchased_at, source, notes</code>.
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Import inventory from CSV</h2>
+          <p className="mt-1 text-xs text-zinc-500 dark:text-neutral-400">
+            Header row required. Columns: <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">name, cost, quantity</code>{" "}
+            plus optional <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">sku, brand, category, size, condition, purchased_at, source, notes</code>.
             Coming from another tool? Export there, rename headers, import here.
           </p>
           <div className="mt-4">

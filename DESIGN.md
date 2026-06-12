@@ -8,16 +8,29 @@ cascade, numbers count up, interactions push back). The feeling: a well-organize
 stockroom with the lights on.
 
 ## 2. Color Palette & Roles
-- **Canvas Mist** (#FAFAFA) — primary app background
+
+Two themes, class-switched (`.dark` on `<html>`, persisted in localStorage, no-FOUC inline script).
+
+Light:
+- **Canvas Mist** (#FAFAFA / gray-50) — primary app background
 - **Pure Surface** (#FFFFFF) — cards, tables, panels
-- **Charcoal Ink** (#18181B) — primary text (Zinc-950 family; pure black banned)
+- **Charcoal Ink** (#18181B) — primary text (pure black banned)
 - **Muted Steel** (#71717A) — secondary text, metadata, helper copy
 - **Whisper Border** (#E4E4E7) — 1px structural lines, card borders
-- **Ledger Green** (#059669, emerald-600) — the single accent: CTAs, active nav, focus rings, positive profit
+
+Dark ("matte black + orange"):
+- **Matte Black** (neutral-950, oklch 14.5%) — app background; never #000
+- **Coal Surface** (neutral-900) — cards, panels
+- **Soft White** (neutral-100) — primary text
+- **Smoke** (neutral-400/500) — secondary text
+- **Seam** (neutral-800) — borders, dividers
+
+Both:
+- **Flip Orange** (#EA580C orange-600 light / orange-500 dark) — the single accent: CTAs, active nav, focus rings, profit highlights
 - **Loss Red** (#DC2626) — semantic only: negative profit, destructive actions
 - **Signal Amber** (#D97706) — semantic only: delist alerts, pending review
 
-Max one accent (Ledger Green). No purple, no neon, no gradients on text.
+Max one accent (Flip Orange). No purple, no neon, no gradients on text.
 
 ## 3. Typography Rules
 - **Display/Headlines:** Geist — tight tracking, hierarchy by weight not size
