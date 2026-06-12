@@ -74,7 +74,7 @@ export default async function DashboardPage() {
           className="mb-6 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 transition-colors hover:bg-amber-100 animate-fade-up"
         >
           <IconAlert className="h-4 w-4 shrink-0" />
-          {delistAlertCount} listing{delistAlertCount > 1 ? "s" : ""} still active for items that already sold — review now
+          {delistAlertCount} listing{delistAlertCount > 1 ? "s" : ""} still active for items that already sold: review now
         </Link>
       )}
 

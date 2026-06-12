@@ -45,7 +45,7 @@ export async function generateInsights(): Promise<InsightsResult> {
   ]);
 
   if (recentSales.length === 0 && activeItems === 0) {
-    return { ok: false, error: "Add some inventory and sales first — insights need data" };
+    return { ok: false, error: "Add some inventory and sales first: insights need data" };
   }
 
   const salesLines = recentSales
@@ -84,9 +84,9 @@ export async function generateInsights(): Promise<InsightsResult> {
     });
 
     const parsed = insightsSchema.safeParse(raw);
-    if (!parsed.success) return { ok: false, error: "Insight generation failed — try again" };
+    if (!parsed.success) return { ok: false, error: "Insight generation failed: try again" };
     return { ok: true, insights: parsed.data.insights };
   } catch {
-    return { ok: false, error: "Insight generation failed — check your API key and try again" };
+    return { ok: false, error: "Insight generation failed: check your API key and try again" };
   }
 }

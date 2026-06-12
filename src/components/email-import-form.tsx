@@ -110,7 +110,7 @@ export function EmailImportForm() {
           name="emailText"
           rows={8}
           className={inputCls}
-          placeholder="Paste the full email here — raw source with headers works too…"
+          placeholder="Paste the full email here: raw source with headers works too…"
         />
       </div>
       <div className="mt-3 max-w-md">

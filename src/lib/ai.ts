@@ -4,7 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 /**
  * Server-only AI helpers. Every AI feature degrades gracefully when
- * ANTHROPIC_API_KEY is not configured — callers check isAiConfigured()
+ * ANTHROPIC_API_KEY is not configured: callers check isAiConfigured()
  * and surface a setup hint instead of erroring.
  */
 

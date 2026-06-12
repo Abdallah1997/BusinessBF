@@ -2,16 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { MODEL_FAST, aiExtract, isAiConfigured } from "@/lib/ai";
 import { EXPENSE_CATEGORIES } from "@/lib/constants";
+import { decryptSecret } from "@/lib/crypto";
 import { csvToObjects } from "@/lib/csv";
 import { parseDollarsToCents } from "@/lib/money";
+import { isPlaidConfigured, plaidClient } from "@/lib/plaid";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { parseLocalDate } from "@/lib/validators";
 import { ActionState, fieldError, str } from "./action-helpers";
+import { classifySpends } from "./bank-classify";
 
-// ---------- Accounts (metadata only — never credentials) ----------
+// ---------- Accounts (metadata only: never credentials) ----------
 
 const accountSchema = z.object({
   nickname: z.string().trim().min(1, "Nickname is required").max(100),
@@ -54,16 +56,6 @@ export async function deleteBankAccount(formData: FormData): Promise<void> {
 
 const MAX_FILE_BYTES = 1_000_000;
 const MAX_ROWS = 500;
-const MAX_AI_BATCH = 100;
-
-interface AiClassification {
-  index: number;
-  suggestion: "EXPENSE" | "INVENTORY" | "IGNORE";
-  category: string | null;
-  item_name: string | null;
-  confidence: number;
-  rationale: string;
-}
 
 /**
  * Import a bank-statement CSV (headers: date, description, amount) and let AI
@@ -87,7 +79,7 @@ export async function importBankCsv(_prev: ActionState, formData: FormData): Pro
   if (file.size > MAX_FILE_BYTES) return { ok: false, error: "File too large (max 1 MB)" };
 
   const rows = csvToObjects(await file.text());
-  if (rows.length === 0) return { ok: false, error: "No data rows found — header row required (date, description, amount)" };
+  if (rows.length === 0) return { ok: false, error: "No data rows found: header row required (date, description, amount)" };
   if (rows.length > MAX_ROWS) return { ok: false, error: `Too many rows (max ${MAX_ROWS})` };
 
   const parsedRows: { date: Date; description: string; amountCents: number }[] = [];
@@ -111,78 +103,78 @@ export async function importBankCsv(_prev: ActionState, formData: FormData): Pro
   );
 
   // AI pass: classify spends (negative amounts). Income rows stay unsuggested.
-  if (isAiConfigured()) {
-    const spends = created.filter((t) => t.amountCents < 0).slice(0, MAX_AI_BATCH);
-    if (spends.length > 0) {
-      try {
-        const result = await aiExtract<{ classifications: AiClassification[] }>({
-          model: MODEL_FAST,
-          system:
-            "You classify bank transactions for an online reseller's bookkeeping. " +
-            "For each transaction decide: EXPENSE (business operating cost — shipping, supplies, fees, software, gas), " +
-            "INVENTORY (buying goods to resell — thrift stores, auctions, wholesale, garage sales, retail arbitrage), " +
-            "or IGNORE (personal spending: groceries, restaurants, rent, entertainment, transfers). " +
-            `For EXPENSE also pick the best category from: ${EXPENSE_CATEGORIES.join(", ")}. ` +
-            "For INVENTORY also produce a short item_name from the merchant (e.g. 'Goodwill haul'). " +
-            "confidence is 0 to 1. Be conservative: when unsure, prefer IGNORE with low confidence.",
-          prompt:
-            "Classify these transactions (amounts are negative dollars = money spent):\n\n" +
-            spends
-              .map(
-                (t, i) =>
-                  `${i}. ${t.date.toISOString().slice(0, 10)} | ${t.description} | $${(t.amountCents / 100).toFixed(2)}`,
-              )
-              .join("\n"),
-          toolName: "classify_transactions",
-          toolDescription: "Record the classification for every transaction by index",
-          inputSchema: {
-            type: "object",
-            properties: {
-              classifications: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    index: { type: "integer" },
-                    suggestion: { type: "string", enum: ["EXPENSE", "INVENTORY", "IGNORE"] },
-                    category: { type: ["string", "null"], enum: [...EXPENSE_CATEGORIES, null] },
-                    item_name: { type: ["string", "null"] },
-                    confidence: { type: "number", minimum: 0, maximum: 1 },
-                    rationale: { type: "string" },
-                  },
-                  required: ["index", "suggestion", "confidence", "rationale"],
-                },
-              },
-            },
-            required: ["classifications"],
-          },
-          maxTokens: 8000,
-        });
-
-        await prisma.$transaction(
-          result.classifications
-            .filter((c) => Number.isInteger(c.index) && c.index >= 0 && c.index < spends.length)
-            .map((c) =>
-              prisma.bankTransaction.update({
-                where: { id: spends[c.index].id },
-                data: {
-                  aiSuggestion: ["EXPENSE", "INVENTORY", "IGNORE"].includes(c.suggestion) ? c.suggestion : null,
-                  aiCategory: c.category && (EXPENSE_CATEGORIES as readonly string[]).includes(c.category) ? c.category : null,
-                  aiItemName: c.item_name?.slice(0, 200) ?? null,
-                  aiConfidence: Math.max(0, Math.min(1, c.confidence)),
-                  aiRationale: c.rationale?.slice(0, 500) ?? null,
-                },
-              }),
-            ),
-        );
-      } catch {
-        // Classification is best-effort; rows stay PENDING for manual review.
-      }
-    }
-  }
+  await classifySpends(created);
 
   revalidatePath("/bank");
   return { ok: true };
+}
+
+// ---------- Plaid sync ----------
+
+/**
+ * Pull new transactions for a Plaid-linked account via /transactions/sync
+ * and feed them into the same AI-classify review queue as CSV imports.
+ */
+export async function syncPlaidAccount(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const user = await requireUser();
+
+  if (!isPlaidConfigured()) {
+    return { ok: false, error: "Plaid is not configured. Add PLAID_CLIENT_ID and PLAID_SECRET to .env." };
+  }
+
+  const id = str(formData, "id");
+  const account = await prisma.bankAccount.findFirst({
+    where: { id, userId: user.id, plaidAccessToken: { not: null } },
+  });
+  if (!account || !account.plaidAccessToken) return { ok: false, error: "Linked account not found" };
+
+  try {
+    const accessToken = decryptSecret(account.plaidAccessToken);
+    let cursor = account.plaidCursor ?? undefined;
+    const added: { date: Date; description: string; amountCents: number }[] = [];
+
+    // Walk the sync stream to the end.
+    for (let page = 0; page < 20; page++) {
+      const { data } = await plaidClient().transactionsSync({
+        access_token: accessToken,
+        cursor,
+        count: 250,
+      });
+      for (const t of data.added) {
+        if (account.plaidAccountId && t.account_id !== account.plaidAccountId) continue;
+        added.push({
+          date: parseLocalDate(t.date),
+          description: (t.merchant_name || t.name || "Transaction").slice(0, 500),
+          // Plaid: positive = money out. Ours: negative = money out.
+          amountCents: -Math.round(t.amount * 100),
+        });
+      }
+      cursor = data.next_cursor;
+      if (!data.has_more) break;
+    }
+
+    const created = await prisma.$transaction(
+      added.map((r) =>
+        prisma.bankTransaction.create({
+          data: { ...r, userId: user.id, bankAccountId: account.id },
+          select: { id: true, date: true, description: true, amountCents: true },
+        }),
+      ),
+    );
+    await prisma.bankAccount.update({
+      where: { id: account.id },
+      data: { plaidCursor: cursor ?? null },
+    });
+
+    await classifySpends(created);
+
+    revalidatePath("/bank");
+    return added.length === 0
+      ? { ok: false, error: "Already up to date: no new transactions" }
+      : { ok: true };
+  } catch {
+    return { ok: false, error: "Plaid sync failed. Reconnect the account and try again." };
+  }
 }
 
 // ---------- Review queue ----------
@@ -228,7 +220,7 @@ export async function confirmTransaction(formData: FormData): Promise<void> {
         costCents: amountCents,
         purchasedAt: txn.date,
         source: txn.description.slice(0, 200),
-        notes: "Imported from bank transaction — update details after sorting the haul",
+        notes: "Imported from bank transaction: update details after sorting the haul",
       },
     });
     await prisma.bankTransaction.updateMany({

@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   return new NextResponse(toCsv(rows), {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="flipledger-expenses-${year}.csv"`,
+      "Content-Disposition": `attachment; filename="businessbf-expenses-${year}.csv"`,
       "Cache-Control": "no-store",
     },
   });

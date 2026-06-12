@@ -53,7 +53,7 @@ export default async function SalesPage() {
           <ActionForm action={createSale} submitLabel="Record sale">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="sm:col-span-2">
-                <label className={labelCls}>Item (optional — links COGS automatically)</label>
+                <label className={labelCls}>Item (optional: links COGS automatically)</label>
                 <select name="itemId" className={inputCls} defaultValue="">
                   <option value="">— No linked item —</option>
                   {sellableItems.map((i) => (

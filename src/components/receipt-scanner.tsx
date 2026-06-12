@@ -36,7 +36,7 @@ export function ReceiptScanner() {
       <div className="animate-fade-up">
         <p className="mb-4 flex items-center gap-2 text-sm text-emerald-700">
           <IconSparkle className="h-4 w-4" />
-          Receipt read — review the fields below, then save.
+          Receipt read: review the fields below, then save.
         </p>
         <ActionForm action={createItem} submitLabel="Add to inventory">
           <ItemFields

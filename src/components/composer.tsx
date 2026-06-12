@@ -42,7 +42,7 @@ const PROFILES: MarketplaceProfile[] = [
     key: "EBAY",
     label: "eBay",
     titleLimit: 80,
-    tips: "Use all 80 title characters — keyword-stuff naturally: brand, item type, size, color, condition.",
+    tips: "Use all 80 title characters: keyword-stuff naturally: brand, item type, size, color, condition.",
     format: (input) =>
       `${baseBody(input)}\n\nShips fast with tracking. Check out my other listings!`,
   },
@@ -58,7 +58,7 @@ const PROFILES: MarketplaceProfile[] = [
     key: "MERCARI",
     label: "Mercari",
     titleLimit: 80,
-    tips: "Mention condition early — Mercari buyers are condition-sensitive. Hashtags help search.",
+    tips: "Mention condition early: Mercari buyers are condition-sensitive. Hashtags help search.",
     format: (input) =>
       `${baseBody(input)}${input.hashtags ? `\n\n${input.hashtags}` : ""}`,
   },
@@ -66,7 +66,7 @@ const PROFILES: MarketplaceProfile[] = [
     key: "DEPOP",
     label: "Depop",
     titleLimit: 65,
-    tips: "Casual tone wins on Depop. Hashtags are critical — Depop search is hashtag-driven.",
+    tips: "Casual tone wins on Depop. Hashtags are critical: Depop search is hashtag-driven.",
     format: (input) =>
       `${baseBody(input)}${input.hashtags ? `\n\n${input.hashtags}` : ""}\n\nDM with questions ✨`,
   },
@@ -74,7 +74,7 @@ const PROFILES: MarketplaceProfile[] = [
     key: "FACEBOOK",
     label: "Facebook Marketplace",
     titleLimit: 99,
-    tips: "Local buyers skim — put price-justifying details (brand, condition) in the first line.",
+    tips: "Local buyers skim: put price-justifying details (brand, condition) in the first line.",
     format: (input) => `${baseBody(input)}\n\nPorch pickup or can ship.`,
   },
 ];
@@ -235,7 +235,7 @@ export function Composer({
             <input value={input.measurements} onChange={set("measurements")} maxLength={200} className={inputCls} placeholder='Pit to pit 22", length 27"' />
           </div>
           <div>
-            <label className={labelCls}>Flaws (be honest — fewer returns)</label>
+            <label className={labelCls}>Flaws (be honest: fewer returns)</label>
             <input value={input.flaws} onChange={set("flaws")} maxLength={300} className={inputCls} placeholder="Tiny pull on left cuff, pictured" />
           </div>
           <div>
@@ -252,7 +252,7 @@ export function Composer({
       <div className="space-y-4 lg:col-span-3">
         {!hasContent ? (
           <Card className="p-8 text-center text-sm text-zinc-400">
-            Start typing on the left — formatted listings for every marketplace appear here.
+            Start typing on the left: formatted listings for every marketplace appear here.
           </Card>
         ) : (
           PROFILES.map((profile) => {

@@ -67,7 +67,7 @@ export async function scanReceipt(formData: FormData): Promise<ReceiptScanResult
         "You extract purchase data from receipt photos for a reseller's inventory system. " +
         "Read the receipt carefully. If multiple line items exist, summarize the purchase as one inventory entry " +
         "using the most descriptive item name and the receipt total. Dates must be YYYY-MM-DD. " +
-        "Use null for anything not visible on the receipt — never guess.",
+        "Use null for anything not visible on the receipt: never guess.",
       prompt: "Extract the purchase information from this receipt photo.",
       image: { mediaType, base64 },
       toolName: "record_receipt",
@@ -90,7 +90,7 @@ export async function scanReceipt(formData: FormData): Promise<ReceiptScanResult
 
     const parsed = extractedSchema.safeParse(raw);
     if (!parsed.success) {
-      return { ok: false, error: "Could not read this receipt — try a clearer photo" };
+      return { ok: false, error: "Could not read this receipt: try a clearer photo" };
     }
     const d = parsed.data;
     return {
@@ -107,6 +107,6 @@ export async function scanReceipt(formData: FormData): Promise<ReceiptScanResult
       },
     };
   } catch {
-    return { ok: false, error: "Receipt scan failed — check your API key and try again" };
+    return { ok: false, error: "Receipt scan failed: check your API key and try again" };
   }
 }

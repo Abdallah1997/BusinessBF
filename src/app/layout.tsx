@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "FlipLedger — Inventory, crosslisting & bookkeeping for resellers",
-    template: "%s · FlipLedger",
+    default: "BusinessBF: Inventory, crosslisting & bookkeeping for resellers",
+    template: "%s · BusinessBF",
   },
   description:
     "Track inventory, manage listings across every marketplace, and know your real profit on every sale. Tax-ready reports included.",

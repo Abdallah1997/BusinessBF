@@ -100,7 +100,7 @@ export default async function ExpensesPage() {
               </div>
               <div className="sm:col-span-2">
                 <label className={labelCls}>Purpose</label>
-                <input name="purpose" maxLength={500} className={inputCls} placeholder="Sourcing trip — estate sale" />
+                <input name="purpose" maxLength={500} className={inputCls} placeholder="Sourcing trip: estate sale" />
               </div>
             </div>
           </ActionForm>

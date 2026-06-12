@@ -14,9 +14,11 @@ import {
   tdMoney,
   thCls,
 } from "@/components/ui";
+import { PlaidLinkButton } from "@/components/plaid-link-button";
 import { isAiConfigured } from "@/lib/ai";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS, type ExpenseCategory } from "@/lib/constants";
 import { formatCents } from "@/lib/money";
+import { isPlaidConfigured } from "@/lib/plaid";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import {
@@ -25,6 +27,7 @@ import {
   deleteBankAccount,
   dismissTransaction,
   importBankCsv,
+  syncPlaidAccount,
 } from "@/server/bank";
 
 export const metadata = { title: "Bank" };
@@ -32,6 +35,7 @@ export const metadata = { title: "Bank" };
 export default async function BankPage() {
   const user = await requireUser();
   const aiOn = isAiConfigured();
+  const plaidOn = isPlaidConfigured();
 
   const [accounts, pending, recent] = await Promise.all([
     prisma.bankAccount.findMany({ where: { userId: user.id }, orderBy: { createdAt: "asc" } }),
@@ -57,7 +61,7 @@ export default async function BankPage() {
       {!aiOn && (
         <Card className="mb-6 border-amber-200 bg-amber-50/60 p-4 animate-fade-up">
           <p className="text-sm text-amber-800">
-            AI classification is off — add <code className="rounded bg-amber-100 px-1">ANTHROPIC_API_KEY</code> to{" "}
+            AI classification is off: add <code className="rounded bg-amber-100 px-1">ANTHROPIC_API_KEY</code> to{" "}
             <code className="rounded bg-amber-100 px-1">.env</code> and restart. Imports still work; you classify manually.
           </p>
         </Card>
@@ -67,22 +71,56 @@ export default async function BankPage() {
         <Card className="p-5 lg:col-span-2 animate-fade-up">
           <h2 className="text-sm font-semibold text-zinc-900">Accounts</h2>
           <p className="mt-1 text-xs text-zinc-400">
-            For labeling imports only. FlipLedger never stores account numbers, routing numbers or bank logins.
+            Bank logins go to Plaid, never to BusinessBF. We store the account name, institution and last 4 digits;
+            access tokens are encrypted at rest.
           </p>
+
+          <div className="mt-4">
+            {plaidOn ? (
+              <PlaidLinkButton />
+            ) : (
+              <div className="rounded-lg border border-dashed border-zinc-300 bg-zinc-50/60 p-3">
+                <p className="text-xs text-zinc-500">
+                  Automatic bank sync uses <span className="font-semibold">Plaid</span>. Add{" "}
+                  <code className="rounded bg-zinc-100 px-1">PLAID_CLIENT_ID</code>,{" "}
+                  <code className="rounded bg-zinc-100 px-1">PLAID_SECRET</code> and{" "}
+                  <code className="rounded bg-zinc-100 px-1">ENCRYPTION_KEY</code> to .env (free sandbox keys at
+                  dashboard.plaid.com), restart, and a Connect button appears here. CSV import below works either way.
+                </p>
+              </div>
+            )}
+          </div>
+
           {accounts.length > 0 && (
             <ul className="mt-4 space-y-2 stagger-children">
               {accounts.map((a) => (
-                <li key={a.id} className="flex items-center justify-between rounded-lg border border-zinc-200 px-3 py-2">
-                  <div>
-                    <p className="text-sm font-medium text-zinc-900">{a.nickname}</p>
-                    <p className="text-xs text-zinc-400">
-                      {[a.institution, a.last4 ? `····${a.last4}` : null].filter(Boolean).join(" · ") || "No details"}
-                    </p>
+                <li key={a.id} className="rounded-lg border border-zinc-200 px-3 py-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-zinc-900">
+                        {a.nickname}
+                        {a.plaidItemId && (
+                          <span className="ml-2 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                            Plaid
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-zinc-400">
+                        {[a.institution, a.last4 ? `····${a.last4}` : null].filter(Boolean).join(" · ") || "No details"}
+                      </p>
+                    </div>
+                    <form action={deleteBankAccount}>
+                      <input type="hidden" name="id" value={a.id} />
+                      <button type="submit" className={btnDanger}>Remove</button>
+                    </form>
                   </div>
-                  <form action={deleteBankAccount}>
-                    <input type="hidden" name="id" value={a.id} />
-                    <button type="submit" className={btnDanger}>Remove</button>
-                  </form>
+                  {a.plaidItemId && (
+                    <div className="mt-2">
+                      <ActionForm action={syncPlaidAccount} submitLabel="Sync transactions">
+                        <input type="hidden" name="id" value={a.id} />
+                      </ActionForm>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -121,7 +159,7 @@ export default async function BankPage() {
           </h2>
           <p className="mt-1 text-xs text-zinc-400">
             Download a CSV from your bank (most banks export this) with columns{" "}
-            <code className="rounded bg-zinc-100 px-1">date, description, amount</code> — spending negative, deposits positive.
+            <code className="rounded bg-zinc-100 px-1">date, description, amount</code>: spending negative, deposits positive.
             AI suggests expense vs. inventory for each spend; you confirm or dismiss below.
           </p>
           <div className="mt-4">

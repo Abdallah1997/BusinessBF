@@ -1,4 +1,4 @@
-# Design System: FlipLedger
+# Design System: BusinessBF
 
 ## 1. Visual Theme & Atmosphere
 A confident, daily-app-balanced workspace for resellers: clinical clarity with warm

@@ -37,6 +37,7 @@ model User {
   mileage          MileageEntry[]
   bankAccounts     BankAccount[]
   bankTransactions BankTransaction[]
+  marketplaceConnections MarketplaceConnection[]
 
   @@map("user")
 }
@@ -206,6 +207,12 @@ model BankAccount {
   nickname    String
   institution String?
   last4       String?
+  // Plaid-linked accounts. plaidAccessToken is AES-256-GCM encrypted at rest
+  // (see src/lib/crypto.ts) and is never returned to the client.
+  plaidItemId      String?
+  plaidAccountId   String?
+  plaidAccessToken String?
+  plaidCursor      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -240,6 +247,29 @@ model BankTransaction {
   @@index([userId, status])
   @@index([userId, date])
   @@map("bank_transaction")
+}
+
+// ---------- Marketplace connections ----------
+// OAuth tokens are AES-256-GCM encrypted at rest and never sent to the client.
+
+model MarketplaceConnection {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // EBAY | POSHMARK | MERCARI | ... (zod-validated)
+  marketplace   String
+  // CONNECTED | EXPIRED (zod-validated)
+  status        String    @default("CONNECTED")
+  accessToken   String? // encrypted
+  refreshToken  String? // encrypted
+  tokenExpires  DateTime?
+  externalUser  String? // marketplace username, display only
+  lastImportAt  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([userId, marketplace])
+  @@map("marketplace_connection")
 }
 
 model MileageEntry {

@@ -61,7 +61,7 @@ export default async function ReportsPage({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Profit &amp; Loss — {report.year}
+            Profit &amp; Loss: {report.year}
           </h2>
           <div className="mt-4 divide-y divide-zinc-100">
             <Row label={`Gross receipts (${report.saleCount} sales)`} value={formatCents(report.grossReceiptsCents)} />
@@ -78,7 +78,7 @@ export default async function ReportsPage({
 
         <Card className="p-6">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Expenses by Schedule C category — {report.year}
+            Expenses by Schedule C category: {report.year}
           </h2>
           {expenseEntries.length === 0 ? (
             <p className="mt-4 text-sm text-zinc-400">No expenses recorded for {report.year}.</p>
@@ -98,7 +98,7 @@ export default async function ReportsPage({
 
       <Card className="mt-6 p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Export your data</h2>
-        <p className="mt-1 text-sm text-zinc-500">Everything you enter is yours — download it as CSV anytime.</p>
+        <p className="mt-1 text-sm text-zinc-500">Everything you enter is yours: download it as CSV anytime.</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <a href={`/api/export/sales?year=${year}`} className={btnGhost} download>Sales {year} (CSV)</a>
           <a href={`/api/export/expenses?year=${year}`} className={btnGhost} download>Expenses {year} (CSV)</a>

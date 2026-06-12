@@ -34,7 +34,7 @@ export async function GET() {
   return new NextResponse(toCsv(rows), {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="flipledger-inventory.csv"',
+      "Content-Disposition": 'attachment; filename="businessbf-inventory.csv"',
       "Cache-Control": "no-store",
     },
   });

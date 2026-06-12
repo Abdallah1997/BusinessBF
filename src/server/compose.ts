@@ -54,7 +54,7 @@ export async function generateListing(formData: FormData): Promise<GeneratedList
         "You write high-converting resale listings (eBay/Poshmark/Mercari style). " +
         "Write a keyword-rich title under 80 characters: brand first, then item type, key attributes, size. " +
         "Description: 2–4 short paragraphs, honest, scannable, leading with what makes the item desirable. " +
-        "No invented details — only use what's provided. No ALL-CAPS hype, no 'L@@K'. " +
+        "No invented details: only use what's provided. No ALL-CAPS hype, no 'L@@K'. " +
         "hashtags: 6–10 space-separated #tags buyers actually search. " +
         "suggested_price_dollars: a realistic resale price given the item and its cost, or null if you can't judge.",
       prompt:
@@ -83,7 +83,7 @@ export async function generateListing(formData: FormData): Promise<GeneratedList
     });
 
     const parsed = generatedSchema.safeParse(raw);
-    if (!parsed.success) return { ok: false, error: "Generation failed — try again" };
+    if (!parsed.success) return { ok: false, error: "Generation failed: try again" };
 
     return {
       ok: true,
@@ -103,6 +103,6 @@ export async function generateListing(formData: FormData): Promise<GeneratedList
       },
     };
   } catch {
-    return { ok: false, error: "Generation failed — check your API key and try again" };
+    return { ok: false, error: "Generation failed: check your API key and try again" };
   }
 }

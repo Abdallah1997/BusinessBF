@@ -45,7 +45,7 @@ export default async function PricingPage() {
     <div className="min-h-screen bg-white">
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <Link href="/" className="text-lg font-bold tracking-tight text-zinc-900">
-          <span className="text-emerald-600">Flip</span>Ledger
+          Business<span className="text-emerald-600">BF</span>
         </Link>
         <nav className="flex items-center gap-5 text-sm font-medium">
           {user ? (
@@ -64,7 +64,7 @@ export default async function PricingPage() {
           Simple pricing. No transaction caps.
         </h1>
         <p className="mt-4 text-zinc-500">
-          Competitors charge more as you sell more. FlipLedger doesn&apos;t punish growth.
+          Competitors charge more as you sell more. BusinessBF doesn&apos;t punish growth.
         </p>
       </section>
 
@@ -102,7 +102,7 @@ export default async function PricingPage() {
       </section>
 
       <footer className="border-t border-zinc-100 py-8 text-center text-xs text-zinc-400">
-        © {new Date().getFullYear()} FlipLedger
+        © {new Date().getFullYear()} BusinessBF
       </footer>
     </div>
   );

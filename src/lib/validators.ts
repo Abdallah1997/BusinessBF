@@ -23,7 +23,7 @@ const optionalTrimmed = (max: number) =>
     .nullable()
     .optional();
 
-// Date-only strings ("2026-06-11") must be parsed as LOCAL dates — new Date()
+// Date-only strings ("2026-06-11") must be parsed as LOCAL dates: new Date()
 // would treat them as UTC midnight and display the previous day in the US.
 export function parseLocalDate(value: string): Date {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);

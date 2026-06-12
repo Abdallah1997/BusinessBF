@@ -21,7 +21,7 @@ export default async function EmailImportPage() {
     <>
       <PageHeader
         title="Email import"
-        subtitle="Turn purchase-confirmation emails into inventory — AI reads the order, you approve the items."
+        subtitle="Turn purchase-confirmation emails into inventory: AI reads the order, you approve the items."
       />
 
       {!aiOn && (
@@ -43,7 +43,7 @@ export default async function EmailImportPage() {
           <h2 className="text-sm font-semibold text-zinc-900">Your purchase email</h2>
           <p className="mt-1 text-xs text-zinc-400">
             The address your order confirmations arrive at. Automatic inbox sync (Gmail/Outlook OAuth) is on the
-            roadmap — for now, forward or paste emails on the left.
+            roadmap: for now, forward or paste emails on the left.
           </p>
           <div className="mt-4">
             <ActionForm action={saveImportEmail} submitLabel="Save">

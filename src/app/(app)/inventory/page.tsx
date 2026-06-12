@@ -60,7 +60,7 @@ export default async function InventoryPage() {
       </div>
 
       {items.length === 0 ? (
-        <EmptyState title="No inventory yet" hint="Scan a receipt or add your first item — cost tracking starts here." />
+        <EmptyState title="No inventory yet" hint="Scan a receipt or add your first item: cost tracking starts here." />
       ) : (
         <Card className="animate-fade-up">
           <table className="w-full">

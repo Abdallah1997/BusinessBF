@@ -19,7 +19,7 @@ export default async function ComposerPage() {
     <>
       <PageHeader
         title="Listing composer"
-        subtitle="Pick an item and let AI write the listing — or write once yourself. Either way, every marketplace gets correctly formatted copy."
+        subtitle="Pick an item and let AI write the listing: or write once yourself. Either way, every marketplace gets correctly formatted copy."
       />
       <Composer items={items} aiConfigured={isAiConfigured()} />
     </>

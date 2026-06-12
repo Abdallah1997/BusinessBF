@@ -56,7 +56,7 @@ export default async function ListingsPage() {
         <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 p-4 animate-fade-up">
           <p className="flex items-center gap-2 text-sm font-semibold text-amber-800">
             <IconAlert className="h-4 w-4 shrink-0" />
-            {delistAlerts.length} listing{delistAlerts.length > 1 ? "s" : ""} need delisting — the item already sold elsewhere
+            {delistAlerts.length} listing{delistAlerts.length > 1 ? "s" : ""} need delisting: the item already sold elsewhere
           </p>
           <ul className="mt-2 space-y-1.5">
             {delistAlerts.map((l) => (
@@ -79,7 +79,7 @@ export default async function ListingsPage() {
         </summary>
         <Card className="mt-3 p-5">
           {activeItems.length === 0 ? (
-            <p className="text-sm text-zinc-500">Add an inventory item first — listings link to items.</p>
+            <p className="text-sm text-zinc-500">Add an inventory item first: listings link to items.</p>
           ) : (
             <ActionForm action={createListing} submitLabel="Add listing">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

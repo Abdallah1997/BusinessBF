@@ -1,5 +1,5 @@
 /**
- * Inline SVG icon set — 16px stroke icons, currentColor.
+ * Inline SVG icon set: 16px stroke icons, currentColor.
  * Per DESIGN.md: no emoji/unicode glyphs in UI chrome.
  */
 

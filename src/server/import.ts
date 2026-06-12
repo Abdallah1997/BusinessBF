@@ -14,7 +14,7 @@ const MAX_ROWS = 2000;
 
 /**
  * Import inventory from CSV. Expected headers (case-insensitive):
- * name, cost, quantity — plus optional sku, brand, category, size,
+ * name, cost, quantity: plus optional sku, brand, category, size,
  * condition, purchased_at, source, notes.
  */
 export async function importInventoryCsv(
@@ -33,7 +33,7 @@ export async function importInventoryCsv(
 
   const text = await file.text();
   const rows = csvToObjects(text);
-  if (rows.length === 0) return { ok: false, error: "No data rows found — is there a header row?" };
+  if (rows.length === 0) return { ok: false, error: "No data rows found: is there a header row?" };
   if (rows.length > MAX_ROWS) return { ok: false, error: `Too many rows (max ${MAX_ROWS})` };
 
   const valid: Prisma.ItemCreateManyInput[] = [];
@@ -77,7 +77,7 @@ export async function importInventoryCsv(
   revalidatePath("/dashboard");
 
   if (errors.length > 0) {
-    return { ok: false, error: `Imported ${valid.length} items; skipped ${errors.length}. First issue — ${errors[0]}` };
+    return { ok: false, error: `Imported ${valid.length} items; skipped ${errors.length}. First issue: ${errors[0]}` };
   }
   return { ok: true };
 }

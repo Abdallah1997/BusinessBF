@@ -1,6 +1,6 @@
 export const BRAND = {
-  name: "FlipLedger",
-  tagline: "Inventory, crosslisting and bookkeeping for resellers — in one place.",
+  name: "BusinessBF",
+  tagline: "Inventory, crosslisting and bookkeeping for resellers, all in one place.",
   description:
     "Track inventory, manage listings across every marketplace, and know your real profit on every sale. Tax-ready reports included.",
 } as const;

@@ -1,5 +1,5 @@
 /**
- * Minimal RFC 4180 CSV handling — no dependency needed for our row sizes.
+ * Minimal RFC 4180 CSV handling: no dependency needed for our row sizes.
  */
 
 export function escapeCsvField(value: string): string {

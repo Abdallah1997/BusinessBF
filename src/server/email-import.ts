@@ -66,9 +66,9 @@ export async function extractOrderEmail(formData: FormData): Promise<EmailExtrac
     const raw = await aiExtract({
       system:
         "You extract purchased items from order-confirmation emails for a reseller's inventory system. " +
-        "The email may be raw .eml source with headers and HTML — ignore boilerplate, tracking pixels and footers. " +
+        "The email may be raw .eml source with headers and HTML: ignore boilerplate, tracking pixels and footers. " +
         "Extract only actual purchased products with their prices. Dates must be YYYY-MM-DD. " +
-        "unit_price_dollars is the per-unit price. Use null when information is absent — never invent.",
+        "unit_price_dollars is the per-unit price. Use null when information is absent: never invent.",
       prompt: `Extract the order details from this email:\n\n${text}`,
       toolName: "record_order",
       toolDescription: "Record the purchased items found in the email",
@@ -115,7 +115,7 @@ export async function extractOrderEmail(formData: FormData): Promise<EmailExtrac
       },
     };
   } catch {
-    return { ok: false, error: "Email parsing failed — check your API key and try again" };
+    return { ok: false, error: "Email parsing failed: check your API key and try again" };
   }
 }
 

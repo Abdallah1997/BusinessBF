@@ -1,4 +1,4 @@
-# FlipLedger
+# BusinessBF
 
 Inventory, crosslisting and bookkeeping for resellers — in one place.
 
@@ -23,7 +23,13 @@ Powered by the Claude API; every feature degrades gracefully to a setup hint whe
 - **AI listing writer** (Composer) — pick an inventory item, AI writes the title/description/hashtags and suggests a price; per-marketplace formatting applies automatically
 - **Business insights** (Dashboard) — AI analyzes your real sales, fees, expenses and stale listings into actionable next steps
 
-Bank accounts store nickname/institution/last-4 only — never account numbers, routing numbers or logins. Automatic inbox sync (Gmail OAuth) and live bank feeds (Plaid) are roadmap items; CSV/paste flows ship now.
+Bank accounts store nickname/institution/last-4 only, never account numbers, routing numbers or logins. Automatic inbox sync (Gmail OAuth) is a roadmap item; CSV/paste flows ship now.
+
+## Integrations (optional, each gated on env keys)
+
+- **Plaid bank sync** — set `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (free sandbox keys at dashboard.plaid.com) plus `ENCRYPTION_KEY` (`openssl rand -base64 32`). A "Connect a bank with Plaid" button appears on the Bank page; transactions sync into the AI review queue. Access tokens are AES-256-GCM encrypted at rest; bank credentials never touch this app.
+- **eBay two-way sync** — create an app at developer.ebay.com, point its redirect at `/api/ebay/callback`, set `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_RU_NAME`, `EBAY_ENV`. Then connect on the Connections page: import active listings, and publish inventory items to eBay directly (seller account needs business policies configured on eBay once).
+- **Poshmark / Mercari** — no public seller APIs exist; auto-posting requires a browser extension (roadmap). The Connections page explains this and routes users through the AI Composer copy flow.
 
 ## Stack
 
