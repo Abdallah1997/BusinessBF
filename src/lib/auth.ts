@@ -51,6 +51,12 @@ export const auth = betterAuth({
       // email matches, instead of creating a duplicate user.
       enabled: true,
       trustedProviders: ["google", "discord"],
+      // We don't run an email-verification flow, so local accounts are always
+      // emailVerified:false. Without this, better-auth refuses to link a
+      // social login to them (account_not_linked) and bounces to the landing
+      // page. Only the trusted providers above (which verify email on their
+      // side) can link, so this stays safe against takeover.
+      requireLocalEmailVerified: false,
     },
   },
   session: {
