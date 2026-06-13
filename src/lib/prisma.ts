@@ -1,10 +1,10 @@
 import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-// SQLite path is resolved relative to process.cwd() (project root), matching
-// where `prisma migrate` creates it via prisma.config.ts.
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? "file:./dev.db",
+// Postgres in all environments. DATABASE_URL is injected by Vercel in
+// production and set in .env locally (e.g. a Neon dev branch or local docker).
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
 });
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };

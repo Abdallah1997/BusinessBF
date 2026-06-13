@@ -38,7 +38,7 @@ export function enabledSocialProviders(): ("google" | "discord")[] {
 }
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: "sqlite" }),
+  database: prismaAdapter(prisma, { provider: "postgresql" }),
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 10,
