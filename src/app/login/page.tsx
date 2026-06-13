@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { AuthForm } from "@/components/auth-form";
+import { AuthCard } from "@/components/ui/auth-card";
+import { enabledSocialProviders } from "@/lib/auth";
 import { getUser } from "@/lib/session";
 
 export const metadata = { title: "Sign in" };
@@ -8,8 +9,10 @@ export const metadata = { title: "Sign in" };
 export default async function LoginPage() {
   if (await getUser()) redirect("/dashboard");
   return (
-    <Suspense>
-      <AuthForm mode="login" />
-    </Suspense>
+    <div className="flex min-h-dvh w-full items-center justify-center bg-gradient-to-br from-orange-50 to-amber-100 p-4 dark:from-neutral-950 dark:to-neutral-900">
+      <Suspense>
+        <AuthCard mode="login" socialProviders={enabledSocialProviders()} />
+      </Suspense>
+    </div>
   );
 }

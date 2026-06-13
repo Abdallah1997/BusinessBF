@@ -1,15 +1,64 @@
 import Link from "next/link";
+import { Boxes, Landmark, Mail, ReceiptText, Sparkles, Tags } from "lucide-react";
 import {
   IconBank,
   IconBox,
   IconChart,
   IconCheck,
   IconGrid,
-  IconSparkle,
   IconTag,
 } from "@/components/icons";
+import FeatureCard from "@/components/ui/core-features";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getUser } from "@/lib/session";
+
+const features = [
+  {
+    icon: <Boxes size={26} />,
+    title: "Inventory with real costs",
+    description:
+      "Every item carries what you paid from sourcing to sale, so profit math stays honest. Scan a receipt and AI fills the rest.",
+    href: "/inventory",
+  },
+  {
+    icon: <Tags size={26} />,
+    title: "Crosslisting tracker",
+    description:
+      "Track each item across every marketplace. Sell once and the rest flag for delisting. Connect eBay to import and publish.",
+    href: "/listings",
+  },
+  {
+    icon: <Landmark size={26} />,
+    title: "Bank sync",
+    description:
+      "Link a bank through Plaid or import a CSV. Credentials never touch BusinessBF; access tokens are encrypted at rest.",
+    badgeText: "Plaid",
+    href: "/bank",
+  },
+  {
+    icon: <Sparkles size={26} />,
+    title: "AI listing composer",
+    description:
+      "Pick an item and AI writes the title, description, hashtags and a suggested price, formatted for each marketplace.",
+    badgeText: "AI",
+    href: "/composer",
+  },
+  {
+    icon: <Mail size={26} />,
+    title: "Order-email import",
+    description:
+      "Paste a purchase confirmation and AI extracts the items, quantities and prices. Approve which ones become inventory.",
+    badgeText: "AI",
+    href: "/email-import",
+  },
+  {
+    icon: <ReceiptText size={26} />,
+    title: "Tax-ready books",
+    description:
+      "Expenses map to Schedule C lines, mileage at the IRS rate, and a year-end P&L your accountant will accept.",
+    href: "/reports",
+  },
+];
 
 const checklistColumns = [
   {
@@ -211,95 +260,16 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {/* Large: inventory */}
-            <div className="group relative col-span-1 overflow-hidden rounded-2xl border border-zinc-100 bg-gray-50 p-8 transition-colors hover:border-orange-200 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-orange-900 md:col-span-2">
-              <div className="relative z-10 max-w-sm">
-                <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-200 bg-white text-orange-600 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-orange-400">
-                  <IconBox className="h-5 w-5" />
-                </div>
-                <h3 className="mb-2 text-xl font-semibold text-zinc-900 dark:text-neutral-100">Inventory with real costs</h3>
-                <p className="text-sm leading-relaxed text-zinc-500 dark:text-neutral-400">
-                  Every item carries what you paid from sourcing to sale. Scan receipts, import order
-                  emails, or pull from a bank transaction; profit math stays honest.
-                </p>
-              </div>
-              <div className="absolute bottom-0 right-0 hidden h-4/5 w-1/2 translate-x-4 translate-y-4 rounded-tl-2xl border-l border-t border-zinc-200 bg-white p-4 shadow-sm dark:border-neutral-700 dark:bg-neutral-800 sm:block">
-                <div className="mb-4 flex items-center justify-between border-b border-zinc-100 pb-2 dark:border-neutral-700">
-                  <span className="text-xs font-medium text-zinc-500 dark:text-neutral-400">Item</span>
-                  <span className="text-xs font-medium text-zinc-500 dark:text-neutral-400">Cost</span>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { name: "Nike Air Max 90", v: "$12.50" },
-                    { name: "Vintage sweater", v: "$8.00" },
-                    { name: "Lego 75257", v: "$15.50" },
-                  ].map((r) => (
-                    <div key={r.name} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-orange-500" />
-                        <span className="text-xs text-zinc-700 dark:text-neutral-300">{r.name}</span>
-                      </div>
-                      <span className="money text-xs font-medium text-zinc-900 dark:text-neutral-100">{r.v}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Tall dark: AI */}
-            <div className="relative col-span-1 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 p-8 text-white dark:border-neutral-800 dark:bg-neutral-900">
-              <div className="absolute right-0 top-0 rounded-full bg-orange-500/10 p-32 blur-3xl" />
-              <div className="relative z-10">
-                <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-orange-400 shadow-sm">
-                  <IconSparkle className="h-5 w-5" />
-                </div>
-                <h3 className="mb-2 text-xl font-semibold">AI does the tedious parts</h3>
-                <p className="mb-8 text-sm leading-relaxed text-zinc-400">
-                  Receipts read themselves. Bank transactions sort themselves. Listings write
-                  themselves. You approve; nothing books without your confirmation.
-                </p>
-                <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4">
-                  <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs text-zinc-400">GOODWILL #123 · $34.50</span>
-                    <span className="rounded-full bg-orange-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase text-orange-400">inventory · 92%</span>
-                  </div>
-                  <div className="mb-4 h-1 w-full overflow-hidden rounded-full bg-zinc-700">
-                    <div className="h-full w-11/12 bg-orange-500" />
-                  </div>
-                  <button className="w-full rounded-lg bg-white py-2 text-xs font-semibold text-zinc-900">Confirm</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Small cards */}
-            {[
-              {
-                Icon: IconTag,
-                title: "Crosslisting",
-                body: "Track every listing per item. Sell once anywhere and the rest flag for delisting. eBay connects directly.",
-              },
-              {
-                Icon: IconBank,
-                title: "Bank sync",
-                body: "Plaid-linked accounts or CSV import. Credentials never touch BusinessBF; tokens are encrypted.",
-              },
-              {
-                Icon: IconChart,
-                title: "Tax-ready books",
-                body: "Schedule C categories, mileage at the IRS rate, year-end P&L your accountant will accept.",
-              },
-            ].map(({ Icon, title, body }) => (
-              <div
-                key={title}
-                className="col-span-1 rounded-2xl border border-zinc-200 bg-white p-8 transition-all hover:shadow-lg hover:shadow-zinc-200/50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:shadow-black/30"
-              >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-orange-100 bg-orange-50 text-orange-600 dark:border-orange-900/60 dark:bg-orange-950/40 dark:text-orange-400">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-neutral-100">{title}</h3>
-                <p className="text-sm text-zinc-500 dark:text-neutral-400">{body}</p>
-              </div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {features.map((f) => (
+              <FeatureCard
+                key={f.title}
+                icon={f.icon}
+                title={f.title}
+                description={f.description}
+                badgeText={f.badgeText}
+                href={f.href}
+              />
             ))}
           </div>
         </div>
