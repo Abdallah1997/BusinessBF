@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "BusinessBF Crosslister",
+  "version": "0.1.0",
+  "description": "Send BusinessBF listings to marketplaces that have no public API (Mercari). Fills the form for you; you review and submit.",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "https://www.mercari.com/*",
+    "https://business-bf-deploy-87e43913.vercel.app/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://business-bf-deploy-87e43913.vercel.app/*"],
+      "js": ["bridge.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.mercari.com/sell/*"],
+      "js": ["mercari.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

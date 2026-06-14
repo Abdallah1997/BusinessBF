@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconSparkle } from "./icons";
 import { Card, btnPrimary, inputCls, labelCls } from "./ui";
 import { generateListing } from "@/server/compose";
@@ -153,6 +153,34 @@ export function Composer({
         ? { ok: true, text: "Published to eBay.", url: res.url }
         : { ok: false, text: res.error ?? "Publishing failed" },
     );
+  }
+
+  // Detect the BusinessBF Crosslister extension (it replies to our PING). Used
+  // to enable the "Send to Mercari" button and show install help otherwise.
+  const [extReady, setExtReady] = useState(false);
+  const [mercariSent, setMercariSent] = useState(false);
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (e.source === window && e.data?.source === "businessbf-ext" && e.data.type === "READY") {
+        setExtReady(true);
+      }
+    }
+    window.addEventListener("message", onMessage);
+    window.postMessage({ source: "businessbf-app", type: "PING" }, "*");
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  function handleSendToMercari(title: string, description: string) {
+    window.postMessage(
+      {
+        source: "businessbf-crosslist",
+        marketplace: "mercari",
+        payload: { title, description, price: publishPrice || suggestedPrice || "" },
+      },
+      "*",
+    );
+    setMercariSent(true);
+    setTimeout(() => setMercariSent(false), 5000);
   }
 
   function set<K extends keyof ComposerInput>(key: K) {
@@ -351,6 +379,30 @@ export function Composer({
                             View listing
                           </a>
                         )}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {profile.key === "MERCARI" && (
+                  <div className="mt-3 border-t border-zinc-100 dark:border-neutral-800 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => handleSendToMercari(title, body)}
+                      disabled={!extReady}
+                      className={btnPrimary}
+                      title={extReady ? undefined : "Install the BusinessBF Crosslister extension to enable"}
+                    >
+                      {mercariSent ? "Opening Mercari…" : "Send to Mercari"}
+                    </button>
+                    {extReady ? (
+                      <p className="mt-1.5 text-xs text-zinc-400 dark:text-neutral-500">
+                        Opens Mercari&apos;s sell page with title, description and price filled. Add photos + category, then list it.
+                      </p>
+                    ) : (
+                      <p className="mt-1.5 text-xs text-zinc-400 dark:text-neutral-500">
+                        Mercari has no public API. Install the BusinessBF Crosslister browser extension (see{" "}
+                        <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">extension/README.md</code>) to enable one-click send.
                       </p>
                     )}
                   </div>
