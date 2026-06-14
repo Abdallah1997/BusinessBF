@@ -4,6 +4,7 @@ import { useState } from "react";
 import { IconSparkle } from "./icons";
 import { Card, btnPrimary, inputCls, labelCls } from "./ui";
 import { generateListing } from "@/server/compose";
+import { publishComposedToEbay } from "@/server/marketplaces";
 
 interface MarketplaceProfile {
   key: string;
@@ -109,9 +110,11 @@ function CopyButton({ text }: { text: string }) {
 export function Composer({
   items,
   aiConfigured,
+  ebayConnected,
 }: {
   items: { id: string; name: string; sku: string | null }[];
   aiConfigured: boolean;
+  ebayConnected: boolean;
 }) {
   const [input, setInput] = useState<ComposerInput>({
     title: "",
@@ -127,6 +130,30 @@ export function Composer({
   const [generating, setGenerating] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [suggestedPrice, setSuggestedPrice] = useState<string | null>(null);
+  const [publishPrice, setPublishPrice] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const [publishMsg, setPublishMsg] = useState<{ ok: boolean; text: string; url?: string } | null>(null);
+
+  async function handlePublishEbay(title: string, description: string) {
+    setPublishMsg(null);
+    if (!itemId) {
+      setPublishMsg({ ok: false, text: "Pick an inventory item above first — eBay needs a linked item." });
+      return;
+    }
+    const price = publishPrice || suggestedPrice || "";
+    if (!price) {
+      setPublishMsg({ ok: false, text: "Enter a price to list at." });
+      return;
+    }
+    setPublishing(true);
+    const res = await publishComposedToEbay({ itemId, title, description, priceDollars: price });
+    setPublishing(false);
+    setPublishMsg(
+      res.ok
+        ? { ok: true, text: "Published to eBay.", url: res.url }
+        : { ok: false, text: res.error ?? "Publishing failed" },
+    );
+  }
 
   function set<K extends keyof ComposerInput>(key: K) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -277,6 +304,57 @@ export function Composer({
                   </p>
                   <p className="mt-2 whitespace-pre-wrap text-xs text-zinc-600 dark:text-neutral-400">{body}</p>
                 </div>
+
+                {profile.key === "EBAY" && (
+                  <div className="mt-3 border-t border-zinc-100 dark:border-neutral-800 pt-3">
+                    {ebayConnected ? (
+                      <>
+                        <div className="flex flex-wrap items-end gap-2">
+                          <div>
+                            <label className={labelCls}>Price (USD)</label>
+                            <input
+                              value={publishPrice}
+                              onChange={(e) => setPublishPrice(e.target.value)}
+                              placeholder={suggestedPrice ?? "0.00"}
+                              inputMode="decimal"
+                              className={`${inputCls} w-28`}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handlePublishEbay(title, body)}
+                            disabled={publishing || !itemId}
+                            className={btnPrimary}
+                            title={itemId ? undefined : "Pick an inventory item on the left first"}
+                          >
+                            {publishing ? "Publishing…" : "Publish to eBay"}
+                          </button>
+                        </div>
+                        {!itemId && (
+                          <p className="mt-1.5 text-xs text-zinc-400 dark:text-neutral-500">
+                            Pick an inventory item in the panel on the left to enable publishing.
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-xs text-zinc-400 dark:text-neutral-500">
+                        Connect eBay on the{" "}
+                        <a href="/connections" className="text-orange-600 underline dark:text-orange-400">Connections</a>{" "}
+                        page to publish directly from here.
+                      </p>
+                    )}
+                    {publishMsg && (
+                      <p className={`mt-2 text-xs ${publishMsg.ok ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                        {publishMsg.text}{" "}
+                        {publishMsg.url && (
+                          <a href={publishMsg.url} target="_blank" rel="noopener noreferrer" className="underline">
+                            View listing
+                          </a>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )}
               </Card>
             );
           })

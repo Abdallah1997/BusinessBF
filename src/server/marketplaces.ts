@@ -93,6 +93,48 @@ export async function importEbayListings(_prev: ActionState, formData_: FormData
 }
 
 /**
+ * Publish the composer's formatted copy to eBay. Uses the composed title and
+ * description (falling back to the item's own fields) so what the user sees in
+ * the composer is what gets listed. Called directly from the composer UI.
+ */
+export async function publishComposedToEbay(input: {
+  itemId: string;
+  title: string;
+  description: string;
+  priceDollars: string;
+}): Promise<{ ok: boolean; error?: string; url?: string }> {
+  const user = await requireUser();
+
+  const token = await ebayAccessTokenFor(user.id);
+  if (!token) return { ok: false, error: "eBay is not connected. Connect it on the Connections page." };
+
+  const item = await prisma.item.findFirst({ where: { id: input.itemId, userId: user.id } });
+  if (!item) return { ok: false, error: "Item not found" };
+
+  const priceCents = parseDollarsToCents(input.priceDollars);
+  if (priceCents === null || priceCents <= 0) return { ok: false, error: "Enter a valid price" };
+
+  const result = await publishToEbay(token, {
+    sku: item.sku || `BBF-${item.id.slice(-8)}`,
+    title: (input.title || item.name).slice(0, 80),
+    description: input.description || item.name,
+    condition: EBAY_CONDITION_MAP[item.condition] ?? "USED_GOOD",
+    quantity: item.quantity,
+    priceDollars: (priceCents / 100).toFixed(2),
+  });
+  if (!result.ok || !result.listingId) {
+    return { ok: false, error: result.error ?? "Publishing failed" };
+  }
+
+  const url = `https://www.ebay.com/itm/${result.listingId}`;
+  await prisma.listing.create({
+    data: { userId: user.id, itemId: item.id, marketplace: "EBAY", priceCents, url, status: "ACTIVE" },
+  });
+  revalidatePath("/listings");
+  return { ok: true, url };
+}
+
+/**
  * Publish an inventory item to eBay directly. Requires the seller's eBay
  * account to have business policies set up; eBay's own error is surfaced
  * if anything is missing.

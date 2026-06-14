@@ -242,24 +242,26 @@ export function AuthCard({
           <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-neutral-900 dark:to-neutral-950">
             <DotMap />
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-8">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="mb-6"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/30">
-                  <span className="text-xl font-semibold tracking-tighter text-white">B</span>
-                </div>
-              </motion.div>
-              <motion.h2
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.5 }}
-                className="mb-2 text-center text-3xl font-bold text-zinc-900 dark:text-neutral-100"
-              >
-                BusinessBF
-              </motion.h2>
+              <Link href="/" className="flex flex-col items-center" aria-label="Back to BusinessBF home">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                  className="mb-6"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/30">
+                    <span className="text-xl font-semibold tracking-tighter text-white">B</span>
+                  </div>
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7, duration: 0.5 }}
+                  className="mb-2 text-center text-3xl font-bold text-zinc-900 transition-opacity hover:opacity-80 dark:text-neutral-100"
+                >
+                  BusinessBF
+                </motion.h2>
+              </Link>
               <motion.p
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}

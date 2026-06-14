@@ -24,7 +24,6 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import {
   confirmTransaction,
-  createBankAccount,
   deleteBankAccount,
   dismissTransaction,
   importBankCsv,
@@ -68,8 +67,8 @@ export default async function BankPage() {
         </Card>
       )}
 
-      <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <Card className="p-5 lg:col-span-2 animate-fade-up">
+      <div className="mb-6">
+        <Card className="p-5 animate-fade-up">
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-neutral-100">Accounts</h2>
           <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">
             Bank logins go to Plaid, never to BusinessBF. We store the account name, institution and last 4 digits;
@@ -146,70 +145,53 @@ export default async function BankPage() {
               ))}
             </ul>
           )}
-          <details className="mt-4">
-            <summary className={summaryCls}>Add account</summary>
-            <div className="mt-3">
-              <ActionForm action={createBankAccount} submitLabel="Add account">
-                <div className="space-y-3">
+        </Card>
+
+        <details className="mt-4">
+          <summary className={summaryCls}>Import transactions from a CSV instead</summary>
+          <Card className="mt-3 p-5 animate-fade-up">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-neutral-100">
+              Import from CSV
+              {aiOn && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 dark:bg-orange-950/30 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-400">
+                  <IconSparkle className="h-3 w-3" /> AI classification on
+                </span>
+              )}
+            </h2>
+            <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">
+              Most people just connect a bank above and hit Sync. Use CSV import only for a bank Plaid
+              can&apos;t link, or to backfill older history. Columns:{" "}
+              <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">date, description, amount</code> (spending negative, deposits positive).
+              AI suggests expense vs. inventory for each spend; you confirm or dismiss below.
+            </p>
+            <div className="mt-4">
+              <ActionForm action={importBankCsv} submitLabel="Import & classify">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className={labelCls}>Nickname *</label>
-                    <input name="nickname" required maxLength={100} className={inputCls} placeholder="Business checking" />
+                    <label className={labelCls}>Account</label>
+                    <select name="bankAccountId" className={inputCls} defaultValue="">
+                      <option value="">— Unassigned —</option>
+                      {accounts.map((a) => (
+                        <option key={a.id} value={a.id}>{a.nickname}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
-                    <label className={labelCls}>Institution</label>
-                    <input name="institution" maxLength={100} className={inputCls} placeholder="Chase" />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Last 4 digits (optional, for your reference)</label>
-                    <input name="last4" maxLength={4} pattern="\d{4}" inputMode="numeric" className={inputCls} placeholder="1234" />
+                    <label className={labelCls}>CSV file (max 1 MB, 500 rows)</label>
+                    <input name="file" type="file" accept=".csv,text/csv" required className={inputCls} />
                   </div>
                 </div>
               </ActionForm>
             </div>
-          </details>
-        </Card>
-
-        <Card className="p-5 lg:col-span-3 animate-fade-up">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-neutral-100">
-            Import transactions
-            {aiOn && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 dark:bg-orange-950/30 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-400">
-                <IconSparkle className="h-3 w-3" /> AI classification on
-              </span>
-            )}
-          </h2>
-          <p className="mt-1 text-xs text-zinc-400 dark:text-neutral-500">
-            Download a CSV from your bank (most banks export this) with columns{" "}
-            <code className="rounded bg-zinc-100 dark:bg-neutral-800 px-1">date, description, amount</code>: spending negative, deposits positive.
-            AI suggests expense vs. inventory for each spend; you confirm or dismiss below.
-          </p>
-          <div className="mt-4">
-            <ActionForm action={importBankCsv} submitLabel="Import & classify">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className={labelCls}>Account</label>
-                  <select name="bankAccountId" className={inputCls} defaultValue="">
-                    <option value="">— Unassigned —</option>
-                    {accounts.map((a) => (
-                      <option key={a.id} value={a.id}>{a.nickname}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelCls}>CSV file (max 1 MB, 500 rows)</label>
-                  <input name="file" type="file" accept=".csv,text/csv" required className={inputCls} />
-                </div>
-              </div>
-            </ActionForm>
-          </div>
-        </Card>
+          </Card>
+        </details>
       </div>
 
       <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-neutral-100 animate-fade-up">
         Review queue {pending.length > 0 && <span className="text-zinc-400 dark:text-neutral-500">({pending.length})</span>}
       </h2>
       {pending.length === 0 ? (
-        <EmptyState title="Nothing to review" hint="Import a bank CSV and suggested classifications appear here." />
+        <EmptyState title="Nothing to review" hint="Connect a bank above and hit Sync (or import a CSV) — suggested classifications appear here." />
       ) : (
         <Card className="animate-fade-up">
           <table className="w-full">
