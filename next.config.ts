@@ -11,11 +11,15 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       // Next.js requires inline styles (styled-jsx/Tailwind) and, in dev, eval.
-      `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
+      // Plaid Link loads its SDK script from cdn.plaid.com.
+      `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://cdn.plaid.com`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self' data:",
-      "connect-src 'self'",
+      // Plaid Link makes API calls to *.plaid.com.
+      "connect-src 'self' https://*.plaid.com",
+      // Plaid Link renders its modal in an iframe served from cdn.plaid.com.
+      "frame-src 'self' https://cdn.plaid.com https://*.plaid.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
