@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { CountryCode, Products } from "plaid";
-import { isPlaidConfigured, plaidClient } from "@/lib/plaid";
+import { isPlaidConfigured, plaidClient, plaidWebhookUrl } from "@/lib/plaid";
 import { getUser } from "@/lib/session";
 
 export async function POST() {
@@ -11,12 +11,14 @@ export async function POST() {
   }
 
   try {
+    const webhook = plaidWebhookUrl();
     const { data } = await plaidClient().linkTokenCreate({
       user: { client_user_id: user.id },
       client_name: "BusinessBF",
       products: [Products.Transactions],
       country_codes: [CountryCode.Us],
       language: "en",
+      ...(webhook ? { webhook } : {}),
     });
     return NextResponse.json({ link_token: data.link_token });
   } catch {

@@ -44,11 +44,52 @@ export async function createBankAccount(_prev: ActionState, formData: FormData):
   return { ok: true };
 }
 
+/**
+ * Disconnect a bank account. For Plaid-linked accounts this calls Plaid
+ * /item/remove first (stops Plaid billing for the Item and revokes our access),
+ * then deletes every account row under that Item (one Item = many accounts).
+ * Plaid failures don't block local deletion.
+ */
 export async function deleteBankAccount(formData: FormData): Promise<void> {
   const user = await requireUser();
   const id = str(formData, "id");
   if (!id) return;
-  await prisma.bankAccount.deleteMany({ where: { id, userId: user.id } });
+
+  const account = await prisma.bankAccount.findFirst({ where: { id, userId: user.id } });
+  if (!account) return;
+
+  if (account.plaidItemId) {
+    if (account.plaidAccessToken && isPlaidConfigured()) {
+      try {
+        await plaidClient().itemRemove({ access_token: decryptSecret(account.plaidAccessToken) });
+      } catch {
+        // Item may already be removed/invalid; delete our copy regardless.
+      }
+    }
+    await prisma.bankAccount.deleteMany({
+      where: { userId: user.id, plaidItemId: account.plaidItemId },
+    });
+  } else {
+    await prisma.bankAccount.deleteMany({ where: { id, userId: user.id } });
+  }
+  revalidatePath("/bank");
+}
+
+/**
+ * Clear update-mode prompts for an Item after the user finishes the reconnect
+ * (Link update mode) flow. The LOGIN_REPAIRED webhook also clears reauth, but
+ * this gives instant UI feedback on success.
+ */
+export async function markReconnected(bankAccountId: string): Promise<void> {
+  const user = await requireUser();
+  const account = await prisma.bankAccount.findFirst({
+    where: { id: bankAccountId, userId: user.id },
+  });
+  if (!account?.plaidItemId) return;
+  await prisma.bankAccount.updateMany({
+    where: { userId: user.id, plaidItemId: account.plaidItemId },
+    data: { reauthRequired: false, newAccountsAvailable: false },
+  });
   revalidatePath("/bank");
 }
 

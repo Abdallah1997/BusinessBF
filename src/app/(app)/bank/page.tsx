@@ -15,6 +15,7 @@ import {
   thCls,
 } from "@/components/ui";
 import { PlaidLinkButton } from "@/components/plaid-link-button";
+import { PlaidReconnectButton } from "@/components/plaid-reconnect-button";
 import { isAiConfigured } from "@/lib/ai";
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS, type ExpenseCategory } from "@/lib/constants";
 import { formatCents } from "@/lib/money";
@@ -115,7 +116,27 @@ export default async function BankPage() {
                     </form>
                   </div>
                   {a.plaidItemId && (
-                    <div className="mt-2">
+                    <div className="mt-2 space-y-2">
+                      {a.reauthRequired && (
+                        <div className="rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-2.5 py-2">
+                          <p className="text-xs text-amber-800 dark:text-amber-300">
+                            This connection needs attention — your bank requires you to sign in again to keep syncing.
+                          </p>
+                          <div className="mt-2">
+                            <PlaidReconnectButton bankAccountId={a.id} label="Reconnect bank" />
+                          </div>
+                        </div>
+                      )}
+                      {!a.reauthRequired && a.newAccountsAvailable && (
+                        <div className="rounded-md border border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950/30 px-2.5 py-2">
+                          <p className="text-xs text-orange-800 dark:text-orange-300">
+                            New accounts are available at this bank.
+                          </p>
+                          <div className="mt-2">
+                            <PlaidReconnectButton bankAccountId={a.id} accountSelection label="Add accounts" />
+                          </div>
+                        </div>
+                      )}
                       <ActionForm action={syncPlaidAccount} submitLabel="Sync transactions">
                         <input type="hidden" name="id" value={a.id} />
                       </ActionForm>

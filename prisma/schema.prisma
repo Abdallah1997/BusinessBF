@@ -213,6 +213,12 @@ model BankAccount {
   plaidAccountId   String?
   plaidAccessToken String?
   plaidCursor      String?
+  // Update-mode state, driven by Plaid Item webhooks. reauthRequired is set on
+  // ITEM_LOGIN_REQUIRED / PENDING_EXPIRATION / PENDING_DISCONNECT and cleared on
+  // LOGIN_REPAIRED or a successful reconnect. newAccountsAvailable is set on
+  // NEW_ACCOUNTS_AVAILABLE so we can prompt the user to add them.
+  reauthRequired       Boolean @default(false)
+  newAccountsAvailable Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
