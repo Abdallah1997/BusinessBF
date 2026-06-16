@@ -47,7 +47,7 @@ const groups: { label: string; links: { href: string; label: string; Icon: typeo
   },
 ];
 
-export function SidebarNav({ email }: { email: string }) {
+export function SidebarNav({ email, isAdmin = false }: { email: string; isAdmin?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -96,6 +96,22 @@ export function SidebarNav({ email }: { email: string }) {
             })}
           </div>
         ))}
+        {isAdmin && (
+          <div className="flex flex-row gap-1 md:mt-5 md:block">
+            <p className="hidden px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-600 dark:text-neutral-400 md:block">
+              Owner
+            </p>
+            <Link
+              href="/admin"
+              className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors md:mb-0.5 ${
+                pathname.startsWith("/admin") ? "bg-orange-600/15 text-orange-300" : "hover:bg-zinc-900 hover:text-white"
+              }`}
+            >
+              <IconChart className="hidden h-4 w-4 opacity-70 md:block" />
+              Admin
+            </Link>
+          </div>
+        )}
       </nav>
       <div className="hidden border-t border-zinc-800 px-5 py-4 md:block">
         <div className="flex items-center justify-between gap-2">
