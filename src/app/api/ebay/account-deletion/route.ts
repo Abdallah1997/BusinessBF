@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 
 /**
  * eBay Marketplace Account Deletion / Closure notifications.
@@ -37,25 +36,21 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ challengeResponse: hash.digest("hex") }, { status: 200 });
 }
 
-// POST: account-deletion notification. Acknowledge fast (200) so eBay does not
-// retry, and best-effort purge that user's stored eBay tokens.
-export async function POST(request: NextRequest) {
-  let body: { notification?: { data?: { username?: string; userId?: string } } } | null = null;
-  try {
-    body = await request.json();
-  } catch {
-    return new NextResponse(null, { status: 200 });
-  }
-
-  const username = body?.notification?.data?.username ?? body?.notification?.data?.userId ?? null;
-  if (username) {
-    try {
-      await prisma.marketplaceConnection.deleteMany({
-        where: { marketplace: "EBAY", externalUser: String(username) },
-      });
-    } catch {
-      // Must still return 200; eBay treats non-2xx as a failure and retries.
-    }
-  }
+// POST: account-deletion notification. We only acknowledge (200) — we do NOT
+// take any destructive action from this endpoint.
+//
+// Why acknowledge-only: this request is unauthenticated from our side, and
+// acting on its (attacker-spoofable) body to delete records would be an
+// unauthenticated destructive action. eBay signs these notifications
+// (x-ebay-signature), but verifying that requires fetching eBay's public key
+// and validating the signature; until that's implemented we must not trust the
+// payload. We also don't store eBay *consumer* PII to erase — the only eBay
+// data we keep is an OAuth token tied to OUR app user, which that user removes
+// themselves via Disconnect (which calls the eBay revoke flow). So there is
+// nothing to delete in response to this notification today.
+//
+// TODO (if we ever store eBay user identifiers): verify x-ebay-signature
+// against eBay's published key, then erase the matching records.
+export async function POST() {
   return new NextResponse(null, { status: 200 });
 }
