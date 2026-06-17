@@ -4,6 +4,7 @@ import { z } from "zod";
 import { decryptSecret } from "@/lib/crypto";
 import { isPlaidConfigured, plaidClient, plaidWebhookUrl } from "@/lib/plaid";
 import { prisma } from "@/lib/prisma";
+import { rateLimited } from "@/lib/rate-limit";
 import { getUser } from "@/lib/session";
 
 const bodySchema = z.object({
@@ -19,6 +20,9 @@ const bodySchema = z.object({
  * token identifies the Item.
  */
 export async function POST(request: NextRequest) {
+  const limited = rateLimited(request, "plaid-link-token-update", 10, 60_000);
+  if (limited) return limited;
+
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!isPlaidConfigured()) {

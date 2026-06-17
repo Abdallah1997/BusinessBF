@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { CountryCode, Products } from "plaid";
 import { isPlaidConfigured, plaidClient, plaidWebhookUrl } from "@/lib/plaid";
+import { rateLimited } from "@/lib/rate-limit";
 import { getUser } from "@/lib/session";
 
-export async function POST() {
+export async function POST(request: Request) {
+  const limited = rateLimited(request, "plaid-link-token", 10, 60_000);
+  if (limited) return limited;
+
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!isPlaidConfigured()) {

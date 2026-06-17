@@ -3,9 +3,13 @@ import { centsToInputValue } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
 import { profitCents } from "@/lib/profit";
 import { toCsv } from "@/lib/csv";
+import { rateLimited } from "@/lib/rate-limit";
 import { getUser } from "@/lib/session";
 
 export async function GET(request: NextRequest) {
+  const limited = rateLimited(request, "export-sales", 20, 60_000);
+  if (limited) return limited;
+
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

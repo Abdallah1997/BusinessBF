@@ -3,6 +3,7 @@ import { z } from "zod";
 import { encryptSecret } from "@/lib/crypto";
 import { isPlaidConfigured, plaidClient } from "@/lib/plaid";
 import { prisma } from "@/lib/prisma";
+import { rateLimited } from "@/lib/rate-limit";
 import { getUser } from "@/lib/session";
 
 const bodySchema = z.object({
@@ -14,6 +15,9 @@ const bodySchema = z.object({
  * stores it encrypted, and creates one BankAccount row per linked account.
  */
 export async function POST(request: NextRequest) {
+  const limited = rateLimited(request, "plaid-exchange", 10, 60_000);
+  if (limited) return limited;
+
   const user = await getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!isPlaidConfigured()) {
